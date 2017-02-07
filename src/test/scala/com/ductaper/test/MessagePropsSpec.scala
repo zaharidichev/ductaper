@@ -2,16 +2,15 @@ package com.ductaper.test
 
 import java.util.Date
 
-import com.ductaper.DeliveryMode.Persistent
-import com.ductaper.{Key, MessageProps}
-import com.ductaper.Key._
+import com.ductaper.core.message.DeliveryMode.Persistent
+import com.ductaper.core.message.{Key, MessageProps}
+import com.ductaper.core.message.Key._
 import org.scalatest.{FlatSpec, Matchers}
-
 
 /**
  * @author Zahari Dichev <zaharidichev@gmail.com>.
  */
-class MessagePropsSpec extends FlatSpec with Matchers{
+class MessagePropsSpec extends FlatSpec with Matchers {
 
   "MessageProps" should "to convertible to a AMQP.BasicProperties" in {
     val date: Date = new Date()
@@ -46,24 +45,27 @@ class MessagePropsSpec extends FlatSpec with Matchers{
     bp.getAppId should be ("app id")
   }
 
-
   it should "extract or null" in {
     val mp = MessageProps(
       ContentType → "content type",
-      ContentEncoding → "encoding")
+      ContentEncoding → "encoding"
+    )
     mp.getOrNull(ContentEncoding) should be ("encoding")
     assert(mp.getOrNull(Priority) == null)
   }
 
   it should "be appendable" in {
     val mp1 = MessageProps(
-      ContentType → "content type")
+      ContentType → "content type"
+    )
     val mp2 = MessageProps(
-      ContentEncoding → "encoding")
+      ContentEncoding → "encoding"
+    )
 
     mp1 ++ mp2 should be (MessageProps(
       ContentType → "content type",
-      ContentEncoding → "encoding"))
+      ContentEncoding → "encoding"
+    ))
   }
 
 }

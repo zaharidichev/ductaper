@@ -1,4 +1,4 @@
-package com.ductaper
+package com.ductaper.core.connection
 
 import scala.concurrent.duration.FiniteDuration
 

@@ -1,4 +1,4 @@
-package com.ductaper
+package com.ductaper.core.exchange
 
 /**
  * @author Zahari Dichev <zaharidichev@gmail.com>.
@@ -12,5 +12,4 @@ object ExchangeType {
   case object Fanout extends ExchangeType("fanout")
   case object Headers extends ExchangeType("headers")
 }
-
 

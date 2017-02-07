@@ -1,8 +1,8 @@
-package com.ductaper
+package com.ductaper.core
 
 /**
  * @author Zahari Dichev <zaharidichev@gmail.com>.
  */
 trait CloseCapable {
- def close():Unit
+  def close(): Unit
 }
