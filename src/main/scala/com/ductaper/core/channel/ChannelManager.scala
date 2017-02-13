@@ -10,7 +10,6 @@ import com.ductaper.core.exchange.{Exchange, ExchangeType}
 import com.ductaper.core.message.Message
 import com.ductaper.core.route._
 import com.rabbitmq.client.AMQP.BasicProperties
-import com.rabbitmq.client.AMQP.Queue.DeclareOk
 import com.rabbitmq.client.{AMQP, Channel, DefaultConsumer, Envelope}
 
 import scala.collection.JavaConverters
@@ -29,13 +28,12 @@ class ChannelManager(chan: Channel, eventListener: SystemEvent ⇒ Unit) extends
       exchange.durable,
       exchange.autoDelete,
       JavaConverters.mapAsJavaMap(exchange.args)
-    )).map( _ => exchange)
+    )).map(_ => exchange)
   }
 
   override def declareQueue(queue: Queue): Try[Queue] = {
-    Try(chan.queueDeclare(queue.name.getOrElse(""),queue.durable,queue.exclusive,queue.autoDelete,JavaConverters.mapAsJavaMap(queue.args))).map(_ => queue)
+    Try(chan.queueDeclare(queue.name.getOrElse(""), queue.durable, queue.exclusive, queue.autoDelete, JavaConverters.mapAsJavaMap(queue.args))).map(_ => queue)
   }
-
 
   override def addAutoAckConsumer(queue: Queue, consumer: Message ⇒ Unit): CloseCapable = {
     val nameOfQueue = declareQueue(queue).get.name.getOrElse("")
@@ -48,7 +46,11 @@ class ChannelManager(chan: Channel, eventListener: SystemEvent ⇒ Unit) extends
     new ConsumerHandle(chan, chan.basicConsume(nameOfQueue, true, nativeConsumer))
   }
 
-  override def queueBind(queue: Queue, exchange: Exchange, routingKey: RoutingKey): Unit = chan.queueBind(queue.name.getOrElse(""), exchange.name, routingKey.name)
+  override def queueBind(
+    queue: Queue,
+    exchange: Exchange,
+    routingKey: RoutingKey
+  ): Unit = chan.queueBind(queue.name.getOrElse(""), exchange.name, routingKey.name)
 
   override def close(): Unit = chan.close()
 
@@ -60,6 +62,5 @@ class ChannelManager(chan: Channel, eventListener: SystemEvent ⇒ Unit) extends
 
   private def sendViaChannel(exchangeName: String, routingKey: String, props: BasicProperties, body: Array[Byte]) = {
     chan.basicPublish(exchangeName, routingKey, props, body)
-
   }
 }

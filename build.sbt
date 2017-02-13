@@ -21,7 +21,8 @@ lazy val `ductaper` = project.in(file(".")).
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "org.scalamock" %% "scalamock-scalatest-support" % "3.4.2" % "test",
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.6",
-      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.8.6"))
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.8.6",
+      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-smile" % "2.8.6"))
 
 scalariformSettings ++ Seq(
   ScalariformKeys.preferences := ScalariformKeys.preferences.value

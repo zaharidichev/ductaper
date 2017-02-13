@@ -1,15 +1,18 @@
 package com.ductaper.core.dsl
 
+import com.ductaper.core.exchange.{DirectExchange, Exchange, FanoutExchange}
+import com.ductaper.core.route.Queue
+
 /**
   * Created by zahari on 08/02/2017.
   */
 
 
-sealed trait EndpointRoute{
-  val queue:String
-  val exchange:String
+trait EndpointRoute{
+  def queue:Queue
+  def exchange:Exchange
 }
 
-case class UnicastEndpointRoute (override val queue:String, override val exchange:String) extends EndpointRoute
-case class BroadCastEndpointRoute(override val queue:String, override val exchange:String) extends EndpointRoute
+case class UnicastEndpointRoute (override val queue:Queue, override val exchange:DirectExchange) extends EndpointRoute
+case class BroadCastEndpointRoute(override val queue:Queue, override val exchange:FanoutExchange) extends EndpointRoute
 
