@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import com.ductaper.core.connection.ReconnectionStrategy.SimpleReconnectionStrategy
 import com.ductaper.core.connection.{ConnectionManager, ConnectionWrapper}
 import com.ductaper.core.message.Message
-import com.ductaper.core.route.{QueueDeclare, RoutingKey}
+import com.ductaper.core.route.{RoutingKey}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration.FiniteDuration;
@@ -15,7 +15,7 @@ import scala.concurrent.duration.FiniteDuration;
  */
 object SampleApp2 extends App {
 
-  val logger = LoggerFactory.getLogger(classOf[App])
+/*  val logger = LoggerFactory.getLogger(classOf[App])
   val connection = ConnectionWrapper.builder("amqp://guest:guest@localhost:5672", ConnectionManager.apply).connectionTimeout(5000).reconnectionStrategy(SimpleReconnectionStrategy(new FiniteDuration(10, TimeUnit.SECONDS))).build()
   val chan = connection.newChannel()
   val ex = chan.declareExchangePassive("my-exchange");
@@ -25,6 +25,6 @@ object SampleApp2 extends App {
     println(x)
   }
 
-  chan.addAutoAckConsumer(q, consumator)
+  chan.addAutoAckConsumer(q, consumator)*/
 
 }

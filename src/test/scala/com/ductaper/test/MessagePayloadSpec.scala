@@ -1,3 +1,4 @@
+/*
 package com.ductaper.test
 
 import com.ductaper.core.channel.{ChannelManager, ChannelWrapper}
@@ -40,3 +41,4 @@ class MessagePayloadSpec extends WordSpecLike with Matchers with MockFactory {
   }
 
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.ductaper.test
 
 import java.util.Date
@@ -70,3 +71,4 @@ class MessagePropsSpec extends FlatSpec with Matchers {
 
 }
 
+*/

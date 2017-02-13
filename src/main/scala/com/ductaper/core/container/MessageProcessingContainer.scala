@@ -4,7 +4,7 @@ import com.ductaper.core.CloseCapable
 import com.ductaper.core.channel.{ChannelWrapper, ConsumerHandle}
 import com.ductaper.core.connection.ConnectionWrapper
 import com.ductaper.core.message.Message
-import com.ductaper.core.route.QueueDeclared
+import com.ductaper.core.route.Queue
 
 import scala.collection.immutable.HashSet
 import scala.collection.mutable
@@ -20,7 +20,7 @@ class MessageProcessingContainer(connection: ConnectionWrapper) extends CloseCap
   def adminChannel: ChannelWrapper = _adminChannel
   def consumerHandles: mutable.HashSet[CloseCapable] = _consumerHandles
 
-  def addConsumer[V, R](queueDeclared: QueueDeclared, consumerFunction: V ⇒ R, deserializer: Message ⇒ V, serializer: R ⇒ Message): Unit = {
+  def addConsumer[V, R](queueDeclared: Queue, consumerFunction: V ⇒ R, deserializer: Message ⇒ V, serializer: R ⇒ Message): Unit = {
     synchronized {
       val channelForConsumer = connection.newChannel()
       val consumerHandle = channelForConsumer.addAutoAckConsumer(queueDeclared, message ⇒ {
