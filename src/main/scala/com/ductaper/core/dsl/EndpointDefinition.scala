@@ -1,8 +1,20 @@
 package com.ductaper.core.dsl
 
+
+
 trait EndpointDefinition {
-  val endpointRoute: EndpointRoute
+  def endpointRoute: EndpointRoute
+  def ~(that:EndpointDefinition):ConcatenatedEndpointDefinition  = ConcatenatedEndpointDefinition(List(this,that))
 }
+
+case class ConcatenatedEndpointDefinition(endpoints:List[EndpointDefinition]) {
+  def ~(that:ConcatenatedEndpointDefinition):ConcatenatedEndpointDefinition  =
+    ConcatenatedEndpointDefinition(this.endpoints.:::(that.endpoints))
+
+  def ~(that:EndpointDefinition):ConcatenatedEndpointDefinition  =
+    ConcatenatedEndpointDefinition(this.endpoints.::(that))
+}
+
 
 //type InputOutputFunctor[-T,+R] = T => R
 //type NoInputOutputFunctor[+R] = () => R

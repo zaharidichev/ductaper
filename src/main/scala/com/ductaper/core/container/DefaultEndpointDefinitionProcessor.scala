@@ -115,8 +115,8 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
 
   }
 
-  override def processEndpointDefinitions(seq: Seq[EndpointDefinition])(implicit converter: MessageConverter): Unit = {
-    seq.foreach(endpointDefinition => {
+  override def processEndpointDefinitions(endpointDefinitions: Seq[EndpointDefinition])(implicit converter: MessageConverter): Unit = {
+    endpointDefinitions.foreach(endpointDefinition => {
       ensureBindingsArePresent(endpointDefinition.endpointRoute) match {
         case Success(_) => registerConsumerHandle (processEndpointDefinition(endpointDefinition))
         case Failure(error) => _logger.error("Unable to bind " + endpointDefinition.endpointRoute,error)
