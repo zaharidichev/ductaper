@@ -2,7 +2,7 @@ package com.ductaper.core.message
 
 import java.nio.charset.Charset
 
-import com.ductaper.core.serialization.MessageSerialization
+import com.ductaper.core.serialization.MessageConverter
 
 /**
  * @author Zahari Dichev <zaharidichev@gmail.com>.
@@ -28,6 +28,6 @@ object MessagePayload {
   def apply(array: Array[Byte]): MessagePayload = new MessagePayload(array)
   def apply(string: String, charset: Charset): MessagePayload = new MessagePayload(string.getBytes(charset))
   def apply(string: String): MessagePayload = new MessagePayload(string.getBytes(Charset.defaultCharset()))
-  def apply[T](toSerialize: T)(implicit converter: MessageSerialization): MessagePayload = converter.serializeToPayload(toSerialize)
+  def apply[T](toSerialize: T)(implicit converter: MessageConverter): MessagePayload = converter.toPayload(toSerialize)
 }
 

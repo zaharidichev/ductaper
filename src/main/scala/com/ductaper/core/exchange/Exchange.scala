@@ -17,7 +17,7 @@ trait Exchange {
 
 case class DirectExchange(
   override val name: String,
-  override val durable: Boolean = false,
+  override val durable: Boolean = true,
   override val autoDelete: Boolean = false,
   override val args: Map[String, AnyRef] = Map.empty
 ) extends Exchange {
@@ -26,7 +26,7 @@ case class DirectExchange(
 
 case class FanoutExchange(
   override val name: String,
-  override val durable: Boolean = false,
+  override val durable: Boolean = true,
   override val autoDelete: Boolean = false,
   override val args: Map[String, AnyRef] = Map.empty
 ) extends Exchange {
@@ -35,7 +35,7 @@ case class FanoutExchange(
 
 case class TopicExchange(
   override val name: String,
-  override val durable: Boolean = false,
+  override val durable: Boolean = true,
   override val autoDelete: Boolean = false,
   override val args: Map[String, AnyRef] = Map.empty
 ) extends Exchange {
@@ -44,10 +44,14 @@ case class TopicExchange(
 
 case class HeadersExchange(
   override val name: String,
-  override val durable: Boolean = false,
+  override val durable: Boolean = true,
   override val autoDelete: Boolean = false,
   override val args: Map[String, AnyRef] = Map.empty
 ) extends Exchange {
   override def exchangeType: ExchangeType = ExchangeType.Headers
+}
+
+object Exchange {
+  val DEFAULT_EXCHANGE = DirectExchange("")
 }
 

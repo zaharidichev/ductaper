@@ -10,7 +10,7 @@ import com.rabbitmq.client.AMQP.BasicProperties
 object Message {
   def apply(messageProperties: MessageProps, body: MessagePayload): Message = new Message(messageProperties, body)
   def apply(messageProperties: BasicProperties, body: Array[Byte]): Message = {
-    val props = MessageProps(messageProperties)
+    val props = MessageProps()
     val messageBody = new MessagePayload(body)
     Message(props, messageBody)
   }
@@ -18,9 +18,9 @@ object Message {
 
 class Message(val messageProperties: MessageProps, val body: MessagePayload) {
 
-  def property(name: BasicKey): Option[Any] = messageProperties.get(name)
+  def property[T](name: BasicKey[T]): Option[T] = messageProperties.property(name)
 
-  def headers: Option[Map[String, Any]] = messageProperties.get(Headers).map((a: Any) ⇒ a.asInstanceOf[Map[String, Any]])
+  def headers: Option[Map[String, Any]] = messageProperties.property(Headers)
 
   def header(name: String): Option[Any] = headers.map(x ⇒ x.get(name))
 

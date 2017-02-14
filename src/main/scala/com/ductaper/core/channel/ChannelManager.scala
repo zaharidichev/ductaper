@@ -10,7 +10,7 @@ import com.ductaper.core.exchange.{Exchange, ExchangeType}
 import com.ductaper.core.message.Message
 import com.ductaper.core.route._
 import com.rabbitmq.client.AMQP.BasicProperties
-import com.rabbitmq.client.{AMQP, Channel, DefaultConsumer, Envelope}
+import com.rabbitmq.client._
 
 import scala.collection.JavaConverters
 import scala.util.Try
@@ -55,8 +55,7 @@ class ChannelManager(chan: Channel, eventListener: SystemEvent ⇒ Unit) extends
   override def close(): Unit = chan.close()
 
   override def send(route: BrokerRoutingData, message: Message): Unit = {
-    val timestampProperty = Timestamp → new Date()
-    val basicProps: BasicProperties = (message.messageProperties + timestampProperty).toJavaBasicProps
+    val basicProps: BasicProperties = (message.messageProperties.timestamp(new Date)).toJavaBasicProps
     sendViaChannel(route.exchange.name, route.routingKey.name, basicProps, message.body.toArray)
   }
 

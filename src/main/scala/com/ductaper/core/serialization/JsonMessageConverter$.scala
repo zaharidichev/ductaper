@@ -9,7 +9,7 @@ import com.fasterxml.jackson.dataformat.smile.SmileFactory
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
-object JsonMessageConvertor extends MessageSerialization {
+object JsonMessageConverter$ extends MessageConverter {
 
   val smileFactory = new SmileFactory()
   val mapper = new ObjectMapper(smileFactory) with ScalaObjectMapper
@@ -24,9 +24,9 @@ object JsonMessageConvertor extends MessageSerialization {
   def fromJson[T](json: String)(implicit m: Manifest[T]): T = {
     mapper.readValue[T](json)
   }
-  override def serializeToPayload[T](toSerialize: T): MessagePayload = MessagePayload(toJson(toSerialize))
-  override def deserializeFromPayload[T](toDeserialize: MessagePayload)(implicit m: Manifest[T]): T = mapper.readValue[T](toDeserialize.toArray)
+  override def toPayload[T](toSerialize: T): MessagePayload = MessagePayload(toJson(toSerialize))
+  override def fromPayload[T](toDeserialize: MessagePayload)(implicit m: Manifest[T]): T = mapper.readValue[T](toDeserialize.toArray)
 
-  implicit val converter: MessageSerialization = this
+  implicit val converter: MessageConverter = this
 }
 

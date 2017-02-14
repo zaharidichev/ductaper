@@ -3,6 +3,7 @@ package com.ductaper.core.message
 import java.util.Date
 
 import com.ductaper.core.message.Key._
+import com.ductaper.core.route.{BrokerRoutingData, RoutingKey}
 import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client.AMQP.BasicProperties.Builder
@@ -10,112 +11,105 @@ import com.rabbitmq.client.AMQP.BasicProperties.Builder
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 
+import com.ductaper.core.exchange.Exchange._
+
 /**
  * @author Zahari Dichev <zaharidichev@gmail.com>.
  */
 
-trait BasicKey {
-}
 
-object Key {
-  case object ContentType extends BasicKey
-  case object ContentEncoding extends BasicKey
-  case object Type extends BasicKey
-  case object Timestamp extends BasicKey
-  case object MessageId extends BasicKey
-  case object ReplyTo extends BasicKey
-  case object DeliveryMode extends BasicKey
-  case object UserId extends BasicKey
-  case object Expiration extends BasicKey
-  case object Priority extends BasicKey
-  case object Headers extends BasicKey
-  case object CorrelationId extends BasicKey
-  case object AppId extends BasicKey
-}
+case class MessageProps(contentType:Option[String] = None,
+             contentEncoding:Option[String] = None,
+             messageType:Option[String] = None,
+             timestamp:Option[Date] = None,
+             messageId:Option[String] = None,
+             replyTo:Option[BrokerRoutingData] = None,
+             deliveryMode:Option[DeliveryMode] = None,
+             userId:Option[String] = None,
+             expiration:Option[Int] = None,
+             priority:Option[Int] = None,
+             headers:Option[Map[String,AnyRef]] = None,
+             correlationId:Option[String] = None,
+             appId:Option[String] = None)
+{
 
-class MessageProps(private val properties: Map[BasicKey, Any]) {
+  def contentType(i:String):MessageProps = copy(contentType = Some(i))
+  def contentEncoding(i:String):MessageProps = copy(contentEncoding = Some(i))
+  def messageType(i:String):MessageProps = copy(messageType = Some(i))
+  def timestamp(i:Date):MessageProps = copy(timestamp=Some(i))
+  def messageId(i:String):MessageProps = copy(messageId = Some(i))
+  def replyTo(i:BrokerRoutingData):MessageProps = copy(replyTo = Some(i))
+  def deliveryMode(i:DeliveryMode):MessageProps = copy(deliveryMode = Some(i))
+  def userId(i:String):MessageProps = copy(userId = Some(i))
+  def expiration(i:Int):MessageProps = copy(expiration = Some(i))
+  def priority(i:Int):MessageProps = copy(priority = Some(i))
+  def headers(i:Map[String,AnyRef]):MessageProps = copy(headers = Some(i))
+  def correlationId(i:String):MessageProps = copy(correlationId = Some(i))
+  def appId(i:String):MessageProps = copy(appId = Some(i))
 
-  def this() = this(Map.empty)
+  def property[T](basicKey: BasicKey[T]):Option[T] = basicKey.getterFunc(this)
 
-  def ++(messageProperties: MessageProps): MessageProps =
-    new MessageProps(properties ++ messageProperties.properties)
-
-  def ++(elems: (BasicKey, Any)*): MessageProps =
-    new MessageProps(properties ++ elems)
-
-  def +(elems: (BasicKey, Any)): MessageProps =
-    new MessageProps(properties + elems)
-
-  private implicit def conv1(x: Any): String = x.asInstanceOf[String]
-  private implicit def conv3(x: Any): java.util.Map[java.lang.String, java.lang.Object] = mapAsJavaMap(x.asInstanceOf[Map[String, Object]])
-  private implicit def conv6(x: Any): Integer = new Integer(x.asInstanceOf[Int])
-
-  def get(name: BasicKey): Option[Any] = properties.get(name)
-
-  def getOrNull(name: BasicKey): Any = properties.get(name).getOrElse(null)
 
   def toJavaBasicProps: BasicProperties = {
     val nativePropesBuilder = new Builder;
-    properties.get(ContentType).foreach(x ⇒ nativePropesBuilder.contentType(x))
-    properties.get(ContentEncoding).foreach(x ⇒ nativePropesBuilder.contentEncoding(x))
-    properties.get(Type).foreach(x ⇒ nativePropesBuilder.`type`(x.toString))
-    properties.get(Timestamp).foreach(x ⇒ nativePropesBuilder.timestamp(x.asInstanceOf[Date]))
-    properties.get(MessageId).foreach(x ⇒ nativePropesBuilder.messageId(x.toString))
-    properties.get(ReplyTo).foreach(x ⇒ nativePropesBuilder.replyTo(x.toString))
-    properties.get(Key.DeliveryMode).foreach(x ⇒ nativePropesBuilder.deliveryMode(new Integer(x.asInstanceOf[DeliveryMode].mode)))
-    properties.get(UserId).foreach(x ⇒ nativePropesBuilder.userId(x.toString))
-    properties.get(Expiration).foreach(x ⇒ nativePropesBuilder.expiration(x.toString))
-    properties.get(Priority).foreach(x ⇒ nativePropesBuilder.priority(x))
-    properties.get(Headers).foreach(x ⇒ nativePropesBuilder.headers(x))
-    properties.get(CorrelationId).foreach(x ⇒ nativePropesBuilder.correlationId(x.toString))
-    properties.get(AppId).foreach(x ⇒ nativePropesBuilder.appId(x.toString))
+    contentType.foreach(x ⇒ nativePropesBuilder.contentType(x))
+    contentEncoding.foreach(x ⇒ nativePropesBuilder.contentEncoding(x))
+    messageType.foreach(x ⇒ nativePropesBuilder.`type`(x.toString))
+    timestamp.foreach(x ⇒ nativePropesBuilder.timestamp(x))
+    messageId.foreach(x ⇒ nativePropesBuilder.messageId(x.toString))
+    replyTo.foreach(x ⇒ nativePropesBuilder.replyTo(x.toString))
+    deliveryMode.foreach(x ⇒ nativePropesBuilder.deliveryMode(x.mode))
+    userId.foreach(x ⇒ nativePropesBuilder.userId(x.toString))
+    expiration.foreach(x ⇒ nativePropesBuilder.expiration(x.toString))
+    priority.foreach(x ⇒ nativePropesBuilder.priority(x))
+    headers.foreach(x ⇒ nativePropesBuilder.headers(mapAsJavaMap(x)))
+    correlationId.foreach(x ⇒ nativePropesBuilder.correlationId(x.toString))
+    appId.foreach(x ⇒ nativePropesBuilder.appId(x.toString))
     nativePropesBuilder.build();
   }
 
-  override def equals(other: Any): Boolean = other match {
-    case that: MessageProps ⇒ properties == that.properties
-    case _                  ⇒ false
-  }
-
-  override def hashCode(): Int = properties.hashCode()
-
-  override def toString = s"MessageProps($properties)"
 }
+
+
+
+class BasicKey[T](val builderFunc: (T,MessageProps) => MessageProps,val getterFunc: MessageProps => Option[T]) {
+  def --> (value:T) = BasicKeyValue(this,value)
+}
+
+case class BasicKeyValue[T](key: BasicKey[T],value:T)
+
+object Key {
+  case object ContentType extends BasicKey[String]( (value,mProps) => mProps.contentType(value), x => x.contentType)
+  case object ContentEncoding extends BasicKey[String]( (value,mProps) => mProps.contentEncoding(value), x => x.contentEncoding)
+  case object Type extends BasicKey[String]( (value,mProps) => mProps.messageType(value),x => x.messageType)
+  case object Timestamp extends BasicKey[Date]( (value,mProps) => mProps.timestamp(value),x => x.timestamp)
+  case object MessageId extends BasicKey[String]( (value,mProps) => mProps.messageId(value), x => x.messageId)
+  case object ReplyTo extends BasicKey[BrokerRoutingData]( (value,mProps) => mProps.replyTo(value), x=> x.replyTo)
+  case object DeliveryMode extends BasicKey[DeliveryMode]( (value,mProps) => mProps.deliveryMode(value),x => x.deliveryMode)
+  case object UserId extends BasicKey[String]( (value,mProps) => mProps.userId(value), x => x.userId)
+  case object Expiration extends BasicKey[Int]( (value,mProps) => mProps.expiration(value), x=> x.expiration)
+  case object Priority extends BasicKey[Int]( (value,mProps) => mProps.priority(value), x=> x.priority)
+  case object Headers extends BasicKey[Map[String,AnyRef]]( (value,mProps) => mProps.headers(value), x=> x.headers)
+  case object CorrelationId extends BasicKey[String]( (value,mProps) => mProps.correlationId(value), x => x.correlationId)
+  case object AppId extends BasicKey[String]( (value,mProps) => mProps.appId(value), x => x.appId)
+}
+
+
+import scala.collection.JavaConverters._
+
 
 object MessageProps {
-
-  def apply(properties: Map[BasicKey, Any]): MessageProps = new MessageProps(properties)
-
-  def apply(prop: (BasicKey, Any)): MessageProps = new MessageProps((Map.newBuilder += (prop)).result())
-
-  def apply(properties: (BasicKey, Any)*): MessageProps = {
-    val propertiesMap: Map[BasicKey, Any] = (Map.newBuilder ++= properties.filterNot(_._2 == null)).result()
-    new MessageProps(propertiesMap)
-  }
-
-  def apply(bp: AMQP.BasicProperties): MessageProps = MessageProps(
-    ContentType → bp.getContentType,
-    ContentEncoding → bp.getContentEncoding,
-    Type → bp.getType,
-    Timestamp → bp.getTimestamp,
-    MessageId → bp.getMessageId,
-    ReplyTo → bp.getReplyTo,
-    Key.DeliveryMode → bp.getDeliveryMode,
-    UserId → bp.getUserId,
-    Expiration → bp.getExpiration,
-    Priority → bp.getPriority,
-    Headers → bp.getHeaders,
-    CorrelationId → bp.getCorrelationId,
-    AppId → bp.getAppId
-  )
+  def apply: MessageProps = new MessageProps()
 
 }
+
+
 
 sealed abstract class DeliveryMode(val mode: Int)
 
 object DeliveryMode {
 
-  def apply(value: Int) = value match {
+  def apply(value: Int):DeliveryMode = value match {
     case 1 ⇒ NotPersistent
     case 2 ⇒ Persistent
   }
