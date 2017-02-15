@@ -1,6 +1,7 @@
-package com.ductaper.core.dsl
+package com.ductaper.dsl
 
-import com.ductaper.core.dsl.EndpointTypes.{broadcast_endpoint, unicast_endpoint}
+import com.ductaper.dsl.EndpointTypes.{broadcast_endpoint, unicast_endpoint}
+
 import scala.language.implicitConversions
 
 /**

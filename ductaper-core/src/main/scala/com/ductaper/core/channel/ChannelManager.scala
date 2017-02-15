@@ -50,7 +50,8 @@ class ChannelManager(chan: Channel, eventListener: SystemEvent ⇒ Unit) extends
     queue: Queue,
     exchange: Exchange,
     routingKey: RoutingKey
-  ): Unit = chan.queueBind(queue.name.getOrElse(""), exchange.name, routingKey.name)
+  ): Try[Binding] = Try(chan.queueBind(queue.name.getOrElse(""), exchange.name, routingKey.name)).map(_ => Binding(queue,exchange,routingKey))
+
 
   override def close(): Unit = chan.close()
 

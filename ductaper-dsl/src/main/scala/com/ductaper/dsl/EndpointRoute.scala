@@ -1,4 +1,4 @@
-package com.ductaper.core.dsl
+package com.ductaper.dsl
 
 import com.ductaper.core.exchange.{DirectExchange, Exchange, FanoutExchange}
 import com.ductaper.core.route.Queue

@@ -1,4 +1,4 @@
-package com.ductaper.core.dsl
+package com.ductaper.dsl
 
 
 
