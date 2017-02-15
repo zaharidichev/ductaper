@@ -10,7 +10,7 @@ val commonSettings = Seq(
   scalacOptions ++= Seq("-Xfatal-warnings", "-feature","-deprecation"))
 
 
-lazy val `ductaper` = project.in(file(".")).
+lazy val `ductaper-core` = project.
   configs(IntegrationTest).
   settings(commonSettings: _*).
   settings(
@@ -23,6 +23,18 @@ lazy val `ductaper` = project.in(file(".")).
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.6",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.8.6",
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-smile" % "2.8.6"))
+
+
+
+lazy val `ductaper-dsl` = project.
+  dependsOn(`ductaper-core`).
+  configs(IntegrationTest).
+  settings(commonSettings: _*)
+
+
+lazy val ductaper =
+     project.in( file(".") )
+    .aggregate(`ductaper-core`, `ductaper-dsl`)
 
 scalariformSettings ++ Seq(
   ScalariformKeys.preferences := ScalariformKeys.preferences.value

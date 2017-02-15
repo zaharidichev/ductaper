@@ -9,7 +9,7 @@ import com.fasterxml.jackson.dataformat.smile.SmileFactory
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
-object JsonMessageConverter$ extends MessageConverter {
+object JsonMessageConverter extends MessageConverter {
 
   val smileFactory = new SmileFactory()
   val mapper = new ObjectMapper(smileFactory) with ScalaObjectMapper

@@ -129,4 +129,10 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
     adminChannel.close()
     connection.close()
   }
+
+}
+
+object DefaultEndpointDefinitionProcessor {
+  def apply(connection: ConnectionWrapper): DefaultEndpointDefinitionProcessor =
+    new DefaultEndpointDefinitionProcessor(connection)
 }

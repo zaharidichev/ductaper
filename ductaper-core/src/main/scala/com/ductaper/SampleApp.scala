@@ -9,7 +9,7 @@ import com.ductaper.core.dsl.{ConcatenatedEndpointDefinition, DuctaperController
 import com.ductaper.core.dsl.EndpointTypes.{broadcast_endpoint, unicast_endpoint}
 
 import scala.language.implicitConversions
-import com.ductaper.core.serialization.JsonMessageConverter$.converter
+import com.ductaper.core.serialization.JsonMessageConverter.converter
 import com.ductaper.core.dsl.EndpointImplicits._
 import com.ductaper.core.dsl.RouteConstants._
 
@@ -22,6 +22,7 @@ case class Request(command: String, arguments: String)
 case class Response(result: String)
 
 
+
 object SampleController extends DuctaperController {
 
 
@@ -31,7 +32,7 @@ object SampleController extends DuctaperController {
 
 
       unicast_endpoint at SAMPLE_RPC_QUEUE takes input[Request] returns {
-        (x) => x.arguments.toCharArray
+        (x) => Response("hahahaha")
       }
 
 
@@ -58,12 +59,10 @@ object SampleController extends DuctaperController {
 object Sample extends App{
 
 
-
-
-  val connection = ConnectionWrapper.builder("amqp://guest:guest@localhost:5672", ConnectionManager.apply)
+  val connection = ConnectionWrapper
+    .builder("amqp://guest:guest@localhost:5672", ConnectionManager.apply)
     .connectionTimeout(5000)
     .reconnectionStrategy(SimpleReconnectionStrategy(new FiniteDuration(10, TimeUnit.SECONDS))).build()
-  val registrator = new DefaultEndpointDefinitionProcessor(connection = connection)
-  registrator.processEndpointDefinitions(SampleController.endpoints)
+  DefaultEndpointDefinitionProcessor(connection).processEndpointDefinitions(SampleController.endpoints)
 
 }

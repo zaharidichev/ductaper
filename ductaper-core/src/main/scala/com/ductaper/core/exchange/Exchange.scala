@@ -8,10 +8,10 @@ import com.ductaper.core.route.{BrokerRoutingData, RoutingKey}
 
 
 trait Exchange {
-  val name: String
-  val durable: Boolean
-  val autoDelete: Boolean
-  val args: Map[String, AnyRef]
+  def name: String
+  def durable: Boolean
+  def autoDelete: Boolean
+  def args: Map[String, AnyRef]
   def exchangeType:ExchangeType
 }
 
@@ -21,7 +21,7 @@ case class DirectExchange(
   override val autoDelete: Boolean = false,
   override val args: Map[String, AnyRef] = Map.empty
 ) extends Exchange {
-  override def exchangeType: ExchangeType = ExchangeType.Direct
+  override val exchangeType: ExchangeType = ExchangeType.Direct
 }
 
 case class FanoutExchange(
@@ -30,7 +30,7 @@ case class FanoutExchange(
   override val autoDelete: Boolean = false,
   override val args: Map[String, AnyRef] = Map.empty
 ) extends Exchange {
-  override def exchangeType: ExchangeType = ExchangeType.Fanout
+  override val exchangeType: ExchangeType = ExchangeType.Fanout
 }
 
 case class TopicExchange(
@@ -39,7 +39,7 @@ case class TopicExchange(
   override val autoDelete: Boolean = false,
   override val args: Map[String, AnyRef] = Map.empty
 ) extends Exchange {
-  override def exchangeType: ExchangeType = ExchangeType.Topic
+  override val exchangeType: ExchangeType = ExchangeType.Topic
 }
 
 case class HeadersExchange(
@@ -48,7 +48,7 @@ case class HeadersExchange(
   override val autoDelete: Boolean = false,
   override val args: Map[String, AnyRef] = Map.empty
 ) extends Exchange {
-  override def exchangeType: ExchangeType = ExchangeType.Headers
+  override val exchangeType: ExchangeType = ExchangeType.Headers
 }
 
 object Exchange {
