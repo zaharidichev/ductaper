@@ -6,8 +6,8 @@ package com.ductaper.core.serialization
 import com.ductaper.core.message.MessagePayload
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.dataformat.smile.SmileFactory
-import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 
 object JsonMessageConverter extends MessageConverter {
 

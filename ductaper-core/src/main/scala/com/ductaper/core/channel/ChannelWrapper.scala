@@ -1,9 +1,8 @@
 package com.ductaper.core.channel
 
-import com.ductaper._
-import com.ductaper.core.CloseCapable
-import com.ductaper.core.exchange.{Exchange, ExchangeType}
+import com.ductaper.core.exchange.Exchange
 import com.ductaper.core.message.Message
+import com.ductaper.core.misc.CloseCapable
 import com.ductaper.core.route.{Binding, BrokerRoutingData, Queue, RoutingKey}
 
 import scala.util.Try

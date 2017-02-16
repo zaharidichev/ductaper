@@ -7,7 +7,8 @@ val commonSettings = Seq(
   scalaVersion := "2.12.1",
   organization := "com.zahari",
   crossScalaVersions := Seq("2.10.4", "2.11.5"),
-  scalacOptions ++= Seq("-Xfatal-warnings", "-feature","-deprecation"))
+  scalacOptions ++= Seq("-Xfatal-warnings", "-feature","-deprecation"),
+  version := "1.1-SNAPSHOT")
 
 
 lazy val `ductaper-core` = project.
@@ -22,7 +23,8 @@ lazy val `ductaper-core` = project.
       "org.scalamock" %% "scalamock-scalatest-support" % "3.4.2" % "test",
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.6",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.8.6",
-      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-smile" % "2.8.6"))
+      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-smile" % "2.8.6",
+      "com.typesafe" % "config" % "1.3.1"))
 
 
 

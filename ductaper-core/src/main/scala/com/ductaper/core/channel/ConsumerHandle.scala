@@ -1,6 +1,6 @@
 package com.ductaper.core.channel
 
-import com.ductaper.core.CloseCapable
+import com.ductaper.core.misc.CloseCapable
 import com.rabbitmq.client.Channel
 
 /**

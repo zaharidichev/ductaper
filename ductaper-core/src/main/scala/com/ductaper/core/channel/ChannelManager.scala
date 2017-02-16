@@ -3,11 +3,9 @@ package com.ductaper.core.channel
 import java.util.Date
 
 import com.ductaper.core.events.Event.SystemEvent
-import com.ductaper.core.message.Key.Timestamp
-import com.ductaper._
-import com.ductaper.core.CloseCapable
-import com.ductaper.core.exchange.{Exchange, ExchangeType}
+import com.ductaper.core.exchange.Exchange
 import com.ductaper.core.message.Message
+import com.ductaper.core.misc.CloseCapable
 import com.ductaper.core.route._
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client._

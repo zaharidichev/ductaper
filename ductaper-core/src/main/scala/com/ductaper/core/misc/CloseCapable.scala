@@ -1,4 +1,4 @@
-package com.ductaper.core
+package com.ductaper.core.misc
 
 /**
  * @author Zahari Dichev <zaharidichev@gmail.com>.

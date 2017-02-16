@@ -1,10 +1,10 @@
 package com.ductaper.dsl.container
 
-import com.ductaper.core.CloseCapable
 import com.ductaper.core.channel.ChannelWrapper
 import com.ductaper.core.connection.ConnectionWrapper
 import com.ductaper.core.message.Key.ReplyTo
 import com.ductaper.core.message.{Message, MessageProps}
+import com.ductaper.core.misc.CloseCapable
 import com.ductaper.core.route.{Binding, Queue, RoutingKey}
 import com.ductaper.core.serialization.MessageConverter
 import com.ductaper.dsl._

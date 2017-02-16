@@ -2,17 +2,12 @@ package com.ductaper.core.message
 
 import java.util.Date
 
-import com.ductaper.core.message.Key._
-import com.ductaper.core.route.{BrokerRoutingData, RoutingKey}
-import com.rabbitmq.client.AMQP
+import com.ductaper.core.route.BrokerRoutingData
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client.AMQP.BasicProperties.Builder
 
 import scala.collection.JavaConverters._
 import scala.language.implicitConversions
-import scala.collection.JavaConverters._
-
-import com.ductaper.core.exchange.Exchange._
 
 /**
  * @author Zahari Dichev <zaharidichev@gmail.com>.
