@@ -11,9 +11,9 @@ object EndpointImplicits {
 
 
 
-  type WithUnicastRoute = (EndpointType,UnicastEndpointRoute)
-  type WithBroadcastRoute = (EndpointType,BroadCastEndpointRoute)
-  type WithRoute = (EndpointType,EndpointRoute)
+  type WithUnicastRoute = (EndpointType,UnicastEndpointRoute,Int)
+  type WithBroadcastRoute = (EndpointType,BroadCastEndpointRoute,Int)
+  type WithRoute = (EndpointType,EndpointRoute,Int)
 
   //type InputOutputFunctor[-T,+R] = T => R
   //type NoInputOutputFunctor[+R] = () => R
@@ -48,22 +48,22 @@ object EndpointImplicits {
 
 
   class BroadcastInputExecutor[T:Manifest](_withRoute: WithBroadcastRoute) extends ConsumingExecution[T]   {
-    override def consumes(func: T => Unit): EndpointDefinition = InputNoOutputEndpointDefinition[T](_withRoute._2,func,manifest[T])
+    override def consumes(func: T => Unit): EndpointDefinition = InputNoOutputEndpointDefinition[T](_withRoute._2,_withRoute._3,func,manifest[T])
   }
 
   class BroadcastNoInputExecutor(_withRoute: WithBroadcastRoute) extends CallingExecution   {
-    override def calls(func: () => Unit): EndpointDefinition = NoInputNoOutputEndpointDefinition(_withRoute._2,func)
+    override def calls(func: () => Unit): EndpointDefinition = NoInputNoOutputEndpointDefinition(_withRoute._2,_withRoute._3,func)
   }
 
 
   class UnicastInputExecutor[T:Manifest](_withRoute: WithUnicastRoute) extends ConsumingExecution[T] with FunctionalExecution[T] {
-    override def consumes(func: T => Unit): EndpointDefinition = InputNoOutputEndpointDefinition[T](_withRoute._2,func,manifest[T])
-    override def returns[R:Manifest](func: T => R): EndpointDefinition = InputOutputEndpointDefinition[T,R](_withRoute._2,func,manifest[T],manifest[R])
+    override def consumes(func: T => Unit): EndpointDefinition = InputNoOutputEndpointDefinition[T](_withRoute._2,_withRoute._3,func,manifest[T])
+    override def returns[R:Manifest](func: T => R): EndpointDefinition = InputOutputEndpointDefinition[T,R](_withRoute._2,_withRoute._3,func,manifest[T],manifest[R])
   }
 
   class UnicastNoInputExecutor(_withRoute: WithUnicastRoute) extends ProvidingExecution with CallingExecution {
-    override def returns[R:Manifest](func: () => R): EndpointDefinition = NoInputOutputEndpointDefinition[R](_withRoute._2,func,manifest[R])
-    override def calls(func: () => Unit): EndpointDefinition = NoInputNoOutputEndpointDefinition(_withRoute._2,func)
+    override def returns[R:Manifest](func: () => R): EndpointDefinition = NoInputOutputEndpointDefinition[R](_withRoute._2,_withRoute._3,func,manifest[R])
+    override def calls(func: () => Unit): EndpointDefinition = NoInputNoOutputEndpointDefinition(_withRoute._2,_withRoute._3,func)
 
   }
 
@@ -76,10 +76,13 @@ object EndpointImplicits {
     def takes[T:Manifest]:BroadcastInputExecutor[T] = new BroadcastInputExecutor[T](withRoute)
   }
 
-  class RouteHelper[T] {
-    def at(route:T):(EndpointType,T) = route match {
-        case _:UnicastEndpointRoute => (unicast_endpoint,route)
-        case _:BroadCastEndpointRoute => (broadcast_endpoint,route)
+  class RouteHelper[T](val consumers:Int = 1) {
+
+    def consumers(_consumers:Int):RouteHelper[T] = new RouteHelper[T](_consumers)
+
+    def at(route:T):(EndpointType,T,Int) = route match {
+        case _:UnicastEndpointRoute => (unicast_endpoint,route,consumers)
+        case _:BroadCastEndpointRoute => (broadcast_endpoint,route,consumers)
       }
 
   }

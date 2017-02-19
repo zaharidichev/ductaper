@@ -8,7 +8,7 @@ val commonSettings = Seq(
   organization := "com.zahari",
   crossScalaVersions := Seq("2.10.4", "2.11.5"),
   scalacOptions ++= Seq("-Xfatal-warnings", "-feature","-deprecation"),
-  version := "1.2-SNAPSHOT")
+  version := "1.3-SNAPSHOT")
 
 
 lazy val `ductaper-core` = project.

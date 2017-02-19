@@ -53,7 +53,7 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
       val output = e.functor(input)
       sendObjectAsResponse(output, message, consumerChannel)
     })
-    _logger.info("Registered " + e.endpointRoute + " with functor [" + inputManifest.runtimeClass + " => " + outputManifest.runtimeClass + "]")
+    _logger.info("Registered " + e.endpointRoute + " with functor [" + inputManifest.runtimeClass + " => " + outputManifest.runtimeClass + "] with " + e.numConsumers + " consumers")
     handle
   }
 
@@ -64,7 +64,7 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
     val handle = consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (message) => {
       sendObjectAsResponse(e.functor(), message, consumerChannel)
     })
-    _logger.info("Registered " + e.endpointRoute + " with functor [() => " + outputManifest.runtimeClass + "]")
+    _logger.info("Registered " + e.endpointRoute + " with functor [() => " + outputManifest.runtimeClass + "] with " + e.numConsumers + " consumers")
     handle
   }
 
@@ -76,7 +76,7 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
       val input = converter.fromPayload(message.body)(inputManifest)
       e.functor(input)
     })
-    _logger.info("Registered " + e.endpointRoute + " with functor [" + inputManifest.runtimeClass + " => Unit]")
+    _logger.info("Registered " + e.endpointRoute + " with functor [" + inputManifest.runtimeClass + " => Unit] with " + e.numConsumers + " consumers")
     handle
   }
 
@@ -85,7 +85,7 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
     val handle = consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (_) => {
       e.functor()
     })
-    _logger.info("Registered " + e.endpointRoute + " with functor [() => ()]")
+    _logger.info("Registered " + e.endpointRoute + " with functor [() => ()] with " + e.numConsumers + " consumers")
     handle
   }
 
