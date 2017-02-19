@@ -9,15 +9,18 @@ import com.ductaper.core.misc.CloseCapable
 import com.ductaper.core.route._
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client._
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 /**
  * @author Zahari Dichev <zaharidichev@gmail.com>.
  */
 
 class ChannelManager(chan: Channel, eventListener: SystemEvent ⇒ Unit) extends ChannelWrapper {
+
+  val logger = LoggerFactory.getLogger(classOf[ChannelManager])
 
   override def declareExchange(exchange: Exchange): Try[Exchange] = {
     Try(chan.exchangeDeclare(
@@ -38,7 +41,10 @@ class ChannelManager(chan: Channel, eventListener: SystemEvent ⇒ Unit) extends
     val nativeConsumer = new DefaultConsumer(chan) {
       override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
         val mess: Message = Message(properties, body);
-        consumer(mess)
+        Try(consumer(mess)) match {
+          case Failure(t) => logger.error("Exception was thrown while executing method on consumer",t)
+          case _ => ()
+        }
       }
     }
     new ConsumerHandle(chan, chan.basicConsume(nameOfQueue, true, nativeConsumer))
