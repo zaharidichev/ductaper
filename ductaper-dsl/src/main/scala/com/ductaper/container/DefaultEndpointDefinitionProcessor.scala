@@ -48,77 +48,86 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
     converter: MessageConverter): CloseCapable = {
 
     val consumerChannel = connection.newChannel()
-    val handle = consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (message) => {
+    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (message) => {
       val input = converter.fromPayload(message.body)(inputManifest)
       val output = e.functor(input)
       sendObjectAsResponse(output, message, consumerChannel)
     })
-    _logger.info("Registered " + e.endpointRoute + " with functor [" + inputManifest.runtimeClass + " => " + outputManifest.runtimeClass + "] with " + e.numConsumers + " consumers")
-    handle
   }
 
   private def processNoInputOutputEndpointDefinition[R](e: NoInputOutputEndpointDefinition[R])(implicit
     outputManifest: Manifest[R],
     converter: MessageConverter): CloseCapable = {
     val consumerChannel = connection.newChannel()
-    val handle = consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (message) => {
+    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (message) => {
       sendObjectAsResponse(e.functor(), message, consumerChannel)
     })
-    _logger.info("Registered " + e.endpointRoute + " with functor [() => " + outputManifest.runtimeClass + "] with " + e.numConsumers + " consumers")
-    handle
   }
 
   private def processInputNoOutputEndpointDefinition[T](e: InputNoOutputEndpointDefinition[T])(implicit
     inputManifest: Manifest[T],
     converter: MessageConverter): CloseCapable = {
     val consumerChannel = connection.newChannel()
-    val handle = consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (message) => {
+
+    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (message) => {
       val input = converter.fromPayload(message.body)(inputManifest)
       e.functor(input)
     })
-    _logger.info("Registered " + e.endpointRoute + " with functor [" + inputManifest.runtimeClass + " => Unit] with " + e.numConsumers + " consumers")
-    handle
   }
 
   private def processNoInputNoOutputEndpointDefinition(e: NoInputNoOutputEndpointDefinition): CloseCapable = {
     val consumerChannel = connection.newChannel()
-    val handle = consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (_) => {
-      e.functor()
-    })
-    _logger.info("Registered " + e.endpointRoute + " with functor [() => ()] with " + e.numConsumers + " consumers")
-    handle
+    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (_) => e.functor())
   }
 
-  private def registerConsumerHandle(handle: CloseCapable) = _consumerHandles += handle
-
-  private def processEndpointDefinition(e: EndpointDefinition)(implicit converter: MessageConverter): CloseCapable = {
+  private def getEndpointSignature(e: EndpointDefinition):String = {
     e match {
-      case end: InputOutputEndpointDefinition[_, _] => {
-        implicit val inputManifest = end.inputManifest
-        implicit val outputManifest = end.outputManifest
-        processInputOutputEndpointDefinition(end)
+      case end: InputOutputEndpointDefinition[_, _] => "[" + end.inputManifest.runtimeClass + " => " + end.outputManifest.runtimeClass + "]"
+      case end: NoInputOutputEndpointDefinition[_] => "[() => " + end.outputManifest.runtimeClass + "]"
+      case end: InputNoOutputEndpointDefinition[_] => "[" + end.inputManifest.runtimeClass + " => Unit]"
+      case end: NoInputNoOutputEndpointDefinition => "[() => ()]"
+    }
+  }
+
+  private def registerConsumerHandles(handles: Seq[CloseCapable]) = _consumerHandles ++= handles
+
+
+  private def processEndpointDefinition(e: EndpointDefinition)(implicit converter: MessageConverter): Seq[CloseCapable] = {
+
+    //Internal function for easing things up
+    def process(e:EndpointDefinition)(implicit converter: MessageConverter): CloseCapable = {
+      e match {
+        case end: InputOutputEndpointDefinition[_, _] => {
+          implicit val inputManifest = end.inputManifest
+          implicit val outputManifest = end.outputManifest
+          processInputOutputEndpointDefinition(end)
+        }
+
+        case end: NoInputOutputEndpointDefinition[_] => {
+          implicit val outputManifest = end.outputManifest
+          processNoInputOutputEndpointDefinition(end)
+        }
+
+        case end: InputNoOutputEndpointDefinition[_] => {
+          implicit val inputManifest = end.inputManifest
+          processInputNoOutputEndpointDefinition(end)
+        }
+
+        case end: NoInputNoOutputEndpointDefinition => processNoInputNoOutputEndpointDefinition(end)
+
       }
-
-      case end: NoInputOutputEndpointDefinition[_] => {
-        implicit val outputManifest = end.outputManifest
-        processNoInputOutputEndpointDefinition(end)
-      }
-
-      case end: InputNoOutputEndpointDefinition[_] => {
-        implicit val inputManifest = end.inputManifest
-        processInputNoOutputEndpointDefinition(end)
-      }
-
-      case end: NoInputNoOutputEndpointDefinition => processNoInputNoOutputEndpointDefinition(end)
-
     }
 
+    val handles = for { _ <- 0 until e.numConsumers } yield process(e)
+    _logger.info("Attached " + e.numConsumers + "consumers at " + e.endpointRoute + " with functor " + getEndpointSignature(e))
+
+    handles
   }
 
   override def processEndpointDefinitions(endpointDefinitions: Seq[EndpointDefinition])(implicit converter: MessageConverter): Unit = {
     endpointDefinitions.foreach(endpointDefinition => {
       ensureBindingsArePresent(endpointDefinition.endpointRoute) match {
-        case Success(_) => registerConsumerHandle(processEndpointDefinition(endpointDefinition))
+        case Success(_) => registerConsumerHandles(processEndpointDefinition(endpointDefinition))
         case Failure(error) => _logger.error("Unable to bind " + endpointDefinition.endpointRoute, error)
       }
     })
