@@ -1,8 +1,7 @@
 machine:
   environment:
     SBT_VERSION: 0.13.11
-    SBT_OPTS: "-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256M"
-    PROJECT_VERSION: "0.1"
+    SBT_OPTS: "-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled"
 dependencies:
   cache_directories:
     - "~/.sbt"
@@ -22,5 +21,5 @@ general:
      - prod
 test:
   override:
-    - if [ $CIRCLE_BRANCH = 'master' ]; then sbt 'set version in ThisBuild := "$PROJECT_VERSION-SNAPSHOT"' publish; fi
-    - if [ $CIRCLE_BRANCH = 'prod' ]; then sbt 'set version in ThisBuild := "$PROJECT_VERSION"' publish; fi
+    - if [ $CIRCLE_BRANCH = 'master' ]; then sbt 'set version in ThisBuild := "0.1-SNAPSHOT"' publish; fi
+    - if [ $CIRCLE_BRANCH = 'prod' ]; then sbt 'set version in ThisBuild := "0.1"' publish; fi
