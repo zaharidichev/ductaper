@@ -119,7 +119,7 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
     }
 
     val handles = for { _ <- 0 until e.numConsumers } yield process(e)
-    _logger.info("Attached " + e.numConsumers + "consumers at " + e.endpointRoute + " with functor " + getEndpointSignature(e))
+    _logger.info("attached " + e.numConsumers + " consumers at " + e.endpointRoute + " with functor " + getEndpointSignature(e))
 
     handles
   }
@@ -132,6 +132,7 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
       }
     })
   }
+
 
   override def close(): Unit = {
     consumerHandles.foreach(_.close())

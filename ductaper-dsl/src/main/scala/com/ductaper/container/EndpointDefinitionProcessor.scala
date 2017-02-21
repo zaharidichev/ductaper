@@ -12,4 +12,5 @@ trait EndpointDefinitionProcessor {
   def processEndpointDefinitions(endpointDefinitions: Seq[EndpointDefinition])(implicit converter: MessageConverter): Unit
   def processEndpointDefinitions(endpointDefinitions: ConcatenatedEndpointDefinition)(implicit converter: MessageConverter): Unit =
     processEndpointDefinitions(endpointDefinitions.endpoints)
+
 }

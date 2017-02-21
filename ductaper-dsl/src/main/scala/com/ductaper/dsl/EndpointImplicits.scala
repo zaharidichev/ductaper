@@ -100,7 +100,7 @@ object EndpointImplicits {
 
   implicit def toBroadcastNoInputexecutor(wir:WithBroadcastRoute):BroadcastNoInputExecutor = new BroadcastNoInputExecutor(wir)
 
-
+  implicit def toConcatEndpointDefinitions(endpointDefinition: EndpointDefinition):ConcatenatedEndpointDefinition = new ConcatenatedEndpointDefinition(List(endpointDefinition))
 
   }
 

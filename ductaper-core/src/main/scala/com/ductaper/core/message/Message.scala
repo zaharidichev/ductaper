@@ -10,7 +10,7 @@ import com.rabbitmq.client.AMQP.BasicProperties
 object Message {
   def apply(messageProperties: MessageProps, body: MessagePayload): Message = new Message(messageProperties, body)
   def apply(messageProperties: BasicProperties, body: Array[Byte]): Message = {
-    val props = MessageProps()
+    val props = MessageProps(messageProperties)
     val messageBody = new MessagePayload(body)
     Message(props, messageBody)
   }

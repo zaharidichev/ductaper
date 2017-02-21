@@ -32,12 +32,27 @@ class ChannelManager(chan: Channel, eventListener: SystemEvent ⇒ Unit) extends
     )).map(_ => exchange)
   }
 
-  override def declareQueue(queue: Queue): Try[Queue] = {
-    Try(chan.queueDeclare(queue.name.getOrElse(""), queue.durable, queue.exclusive, queue.autoDelete, JavaConverters.mapAsJavaMap(queue.args))).map(_ => queue)
+  override def declareQueue(queue: QueueDeclare): Try[Queue] = {
+    Try(chan.queueDeclare(queue.name.getOrElse(""), queue.durable, queue.exclusive, queue.autoDelete, JavaConverters.mapAsJavaMap(queue.args))).map(q => QueuePassive(Some(q.getQueue)))
+  }
+
+  private def ensureQueue(q:Queue): Try[Queue] = {
+    q match {
+      case declare:QueueDeclare => declareQueue(declare)
+      case passive:QueuePassive => Try(passive)
+    }
+  }
+
+/*  Actively declare a server-named exclusive, autodelete, non-durable queue.
+  * The name of the new queue is held in the "queue" field of the {@link com.rabbitmq.client.AMQP.Queue.DeclareOk} result.
+  */
+  override def declareQueue(): Try[Queue] = {
+    Try(chan.queueDeclare()).map(q => QueuePassive(Option(q.getQueue)))
   }
 
   override def addAutoAckConsumer(queue: Queue, consumer: Message ⇒ Unit): CloseCapable = {
-    val nameOfQueue = declareQueue(queue).get.name.getOrElse("")
+    val nameOfQueue = ensureQueue(queue).get.name.getOrElse("")
+
     val nativeConsumer = new DefaultConsumer(chan) {
       override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
         val mess: Message = Message(properties, body);

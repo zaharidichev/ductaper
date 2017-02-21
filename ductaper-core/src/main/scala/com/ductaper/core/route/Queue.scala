@@ -5,10 +5,18 @@ package com.ductaper.core.route
  */
 
 /** Parameters to create a new queue */
-case class Queue(
-  name: Option[String],
+
+trait Queue{
+  def name: Option[String]
+  def nameOrEmpty: String = name.getOrElse("")
+}
+
+case class QueueDeclare(
+  override val name: Option[String],
   durable: Boolean = true,
   exclusive: Boolean = false,
   autoDelete: Boolean = false,
   args: Map[String, AnyRef] = Map.empty
-)
+) extends Queue
+
+case class QueuePassive(override val name:Option[String]) extends Queue

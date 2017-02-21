@@ -2,8 +2,9 @@ package com.ductaper.core.message
 
 import java.util.Date
 
-import com.ductaper.core.route.BrokerRoutingData
-import com.rabbitmq.client.AMQP.BasicProperties
+import com.ductaper.core.message.DeliveryMode.Unspecified
+import com.ductaper.core.route.{BrokerRoutingData, Queue, RoutingKey}
+import com.rabbitmq.client.AMQP.{BasicProperties, Exchange}
 import com.rabbitmq.client.AMQP.BasicProperties.Builder
 
 import scala.collection.JavaConverters._
@@ -22,7 +23,7 @@ case class MessageProps(
   replyTo: Option[BrokerRoutingData] = None,
   deliveryMode: Option[DeliveryMode] = None,
   userId: Option[String] = None,
-  expiration: Option[Int] = None,
+  expiration: Option[String] = None,
   priority: Option[Int] = None,
   headers: Option[Map[String, AnyRef]] = None,
   correlationId: Option[String] = None,
@@ -34,9 +35,17 @@ case class MessageProps(
   def timestamp(i: Date): MessageProps = copy(timestamp = Some(i))
   def messageId(i: String): MessageProps = copy(messageId = Some(i))
   def replyTo(i: BrokerRoutingData): MessageProps = copy(replyTo = Some(i))
-  def deliveryMode(i: DeliveryMode): MessageProps = copy(deliveryMode = Some(i))
+  def deliveryMode(i: DeliveryMode): MessageProps = {
+
+    val delMode = i match {
+      case Unspecified => None
+      case _ => Some(i)
+    }
+    copy(deliveryMode = delMode)
+
+  }
   def userId(i: String): MessageProps = copy(userId = Some(i))
-  def expiration(i: Int): MessageProps = copy(expiration = Some(i))
+  def expiration(i: String): MessageProps = copy(expiration = Some(i))
   def priority(i: Int): MessageProps = copy(priority = Some(i))
   def headers(i: Map[String, AnyRef]): MessageProps = copy(headers = Some(i))
   def correlationId(i: String): MessageProps = copy(correlationId = Some(i))
@@ -51,7 +60,7 @@ case class MessageProps(
     messageType.foreach(x ⇒ nativePropertiesBuilder.`type`(x.toString))
     timestamp.foreach(x ⇒ nativePropertiesBuilder.timestamp(x))
     messageId.foreach(x ⇒ nativePropertiesBuilder.messageId(x.toString))
-    replyTo.foreach(x ⇒ nativePropertiesBuilder.replyTo(x.toString))
+    replyTo.foreach(x ⇒ nativePropertiesBuilder.replyTo(x.routingKey.name))
     deliveryMode.foreach(x ⇒ nativePropertiesBuilder.deliveryMode(x.mode))
     userId.foreach(x ⇒ nativePropertiesBuilder.userId(x.toString))
     expiration.foreach(x ⇒ nativePropertiesBuilder.expiration(x.toString))
@@ -79,7 +88,7 @@ object Key {
   case object ReplyTo extends BasicKey[BrokerRoutingData](x => x.replyTo)
   case object DeliveryMode extends BasicKey[DeliveryMode](x => x.deliveryMode)
   case object UserId extends BasicKey[String](x => x.userId)
-  case object Expiration extends BasicKey[Int](x => x.expiration)
+  case object Expiration extends BasicKey[String](x => x.expiration)
   case object Priority extends BasicKey[Int](x => x.priority)
   case object Headers extends BasicKey[Map[String, AnyRef]](x => x.headers)
   case object CorrelationId extends BasicKey[String](x => x.correlationId)
@@ -88,6 +97,22 @@ object Key {
 
 object MessageProps {
   def apply: MessageProps = new MessageProps()
+  def apply(nativeProperties: BasicProperties): MessageProps = {
+    new MessageProps()
+      .replyTo(BrokerRoutingData(com.ductaper.core.exchange.Exchange.DEFAULT_EXCHANGE,RoutingKey(nativeProperties.getReplyTo)))
+      .timestamp(nativeProperties.getTimestamp)
+      .appId(nativeProperties.getAppId)
+      .contentType(nativeProperties.getContentType)
+      .contentEncoding(nativeProperties.getContentEncoding)
+      .messageType(nativeProperties.getType)
+      .messageId(nativeProperties.getMessageId)
+      .deliveryMode(DeliveryMode(nativeProperties.getDeliveryMode))
+      .userId(nativeProperties.getUserId)
+      .expiration(nativeProperties.getExpiration)
+      .priority(nativeProperties.getPriority)
+      .headers(Option(nativeProperties.getHeaders).map(x => x.asScala).map(x => x.toMap).getOrElse(Map.empty))
+      .correlationId(nativeProperties.getCorrelationId)
+  }
 }
 
 sealed abstract class DeliveryMode(val mode: Int)
@@ -96,11 +121,14 @@ object DeliveryMode {
   def apply(value: Int): DeliveryMode = value match {
     case 1 ⇒ NotPersistent
     case 2 ⇒ Persistent
+    case _ => Unspecified
   }
 
   case object NotPersistent extends DeliveryMode(1)
 
   case object Persistent extends DeliveryMode(2)
+
+  case object Unspecified extends DeliveryMode(-1)
 
 }
 
