@@ -1,19 +1,10 @@
 import sbt.Keys.libraryDependencies
 import scalariform.formatter.preferences._
-
-
-
-val commonSettings = Seq(
-  scalaVersion := "2.12.1",
-  organization := "com.zahari",
-  crossScalaVersions := Seq("2.10.4", "2.11.5"),
-  scalacOptions ++= Seq("-Xfatal-warnings", "-feature","-deprecation"),
-  version := "1.9.4-SNAPSHOT")
+import sbt.ProjectExtra
 
 
 lazy val `ductaper-core` = project.
-  configs(IntegrationTest).
-  settings(commonSettings: _*).
+  settings(publishSettings: _*).
   settings(
     libraryDependencies ++= Seq(
       "com.rabbitmq" % "amqp-client" % "3.4.2",
@@ -28,17 +19,38 @@ lazy val `ductaper-core` = project.
 
 
 
+
 lazy val `ductaper-dsl` = project.
   dependsOn(`ductaper-core`).
-  configs(IntegrationTest).
-  settings(commonSettings: _*)
+  settings(publishSettings: _*)
+
+
+lazy val artifactoryCredentials = Credentials("Artifactory Realm", "artifactory.airconomist.com", System.getenv("ARTIFACTORY_USER"), System.getenv("ARTIFACTORY_PASSWORD"))
+
+lazy val snapshotArtifactoryAdress = Some("Artifactory Realm" at "http://artifactory.airconomist.com/artifactory/ext-snapshot-local;build.timestamp=" + new java.util.Date().getTime)
+lazy val releaseArtifactoryAdress = Some("Artifactory Realm" at "http://artifactory.airconomist.com/artifactory/ext-release-local")
+
+
+lazy val publishSettings = Seq(publishTo := (if (isSnapshot.value) snapshotArtifactoryAdress else releaseArtifactoryAdress),
+                               credentials += artifactoryCredentials)
+
+
 
 
 lazy val ductaper =
-     project.in( file(".") )
+     project.in( file("."))
     .aggregate(`ductaper-core`, `ductaper-dsl`)
+    .settings(inThisBuild(List(
+      scalaVersion := "2.12.1",
+      organization := "com.zahari",
+      version      := "0.1.0-SNAPSHOT",
+      crossScalaVersions := Seq("2.10.4", "2.11.5"),
+      scalacOptions ++= Seq("-Xfatal-warnings", "-feature","-deprecation"))))
+    .settings(publishSettings: _*)
 
-scalariformSettings ++ Seq(
+
+
+  scalariformSettings ++ Seq(
   ScalariformKeys.preferences := ScalariformKeys.preferences.value
     .setPreference(AlignSingleLineCaseStatements, true)
     .setPreference(DoubleIndentClassDeclaration, true)

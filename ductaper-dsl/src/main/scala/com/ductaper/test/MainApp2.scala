@@ -10,11 +10,11 @@ import com.ductaper.dsl.container.DefaultEndpointDefinitionProcessor
 import com.rabbitmq.client.AMQP.Exchange
 import com.ductaper.core.serialization.JsonMessageConverter.converter
 
-
 import scala.concurrent._
 import ExecutionContext.Implicits.global
-
 import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.util.{Failure, Success, Try}
 
 /**
   * Created by zahari on 20/02/2017.
@@ -25,10 +25,14 @@ import scala.concurrent.Future
     val conn = ConnectionWrapper.getConnection()
     val client = new MQClientImpl(conn)
 
+    val timeout = Duration(5,TimeUnit.SECONDS)
     val routing = SampleController.SAMPLE_RPC_QUEUE.routingData
-    val response: Future[Response] = client.sendAndReceive[Request,Response](Request("myCommand","yourCommand"),routing,MessageProps(),TimeUnit.DAYS)
-    response.onComplete( x => {
-      print(x.get)
+    val response: Future[Try[Response]] = client.sendAndReceive[Request,Response](Request("myCommand","yourCommand"),routing,MessageProps(),timeout)
+
+
+   response.foreach(x => x match {
+      case Success(response) => println("The response is " + response)
+      case Failure(t) => println("The error is " + t)
     })
 
 

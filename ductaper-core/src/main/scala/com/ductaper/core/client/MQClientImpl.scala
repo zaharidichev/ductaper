@@ -2,15 +2,16 @@ package com.ductaper.core.client
 
 import com.ductaper.core.channel.ChannelWrapper
 import com.ductaper.core.connection.ConnectionWrapper
+import com.ductaper.core.error.MqTimeoutException
 import com.ductaper.core.exchange.Exchange
 import com.ductaper.core.message.{Message, MessageProps}
 import com.ductaper.core.route.{BrokerRoutingData, RoutingKey}
 import com.ductaper.core.serialization.MessageConverter
 import com.sun.javafx.scene.layout.region.Margins.Converter
 
-import scala.concurrent.duration.TimeUnit
+import scala.concurrent.duration.{Duration, TimeUnit}
 import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.util.Try
+import scala.util.{Failure, Try}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
@@ -33,11 +34,21 @@ class MQClientImpl(private val connectionWrapper: ConnectionWrapper) extends MQC
 
 
 
+  private def addTimeoutHookToPromise[R](p: Promise[Try[R]],duration: Duration) = {
+    Future {
+        Thread.sleep(duration.toMillis)
+        p.trySuccess(Failure(new MqTimeoutException("Response took more than " + duration.toMillis  + " milliseconds to arrive")))
+    }
+  }
+
+
   // This is super rudimentary for now, just to see whether the basic logic works at all...
+  // Currently we are creating new channel and a consumer for each call to this method.
+  // It would be great if we can pool these somehow to avoid the overhead
   override def sendAndReceive[T,R](data:T, routingData: BrokerRoutingData,
                           messageProps: MessageProps,
-                          timeout: TimeUnit)
-                         (implicit converter: MessageConverter,responseManifest:Manifest[R]): Future[R] = {
+                          timeout: Duration)
+                         (implicit converter: MessageConverter,responseManifest:Manifest[R]): Future[Try[R]] = {
 
     val chann = connectionWrapper.newChannel()
     val callBackQueue = chann.declareQueue.get
@@ -46,15 +57,27 @@ class MQClientImpl(private val connectionWrapper: ConnectionWrapper) extends MQC
     val messageProps = MessageProps().replyTo(BrokerRoutingData(Exchange.DEFAULT_EXCHANGE,RoutingKey(callBackQueue.name.getOrElse(""))))
     val messageToSend = Message(messageProps,messagePayload)
 
-    val promise: Promise[R] = Promise()
+    val promise: Promise[Try[R]] = Promise()
+
 
 
     val conusmerCallBack: Message => Unit = m => {
-      val response: R = converter.fromPayload(m.body)
-      promise.success(response)
+      val result: Try[R] = Try(converter.fromPayload(m.body))
+      promise.trySuccess(result)
     }
-    chann.addAutoAckConsumer(callBackQueue, conusmerCallBack)
+    val consumerHandle = chann.addAutoAckConsumer(callBackQueue, conusmerCallBack)
     chann.send(routingData,messageToSend)
+
+    addTimeoutHookToPromise(promise,timeout)
+    val futureResult = promise.future
+
+    // when finished clean up the resources
+    futureResult.onComplete( _ => {
+      consumerHandle.close()
+      chann.close()
+    })
+
+
     promise.future
   }
 

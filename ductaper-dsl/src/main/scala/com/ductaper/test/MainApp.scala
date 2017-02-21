@@ -29,14 +29,9 @@ object SampleController extends DuctaperController {
 
       unicast_endpoint consumers 4 at SAMPLE_RPC_QUEUE takes input[Request] returns[Response] {
         (x) => {
-          Response("hahahaha")
+          Response("Echo " + x.command)
         }
       }
-
-
-
-
-
 
 }
 
@@ -45,8 +40,5 @@ object SampleController extends DuctaperController {
 
 
 object Sample extends App{
-
-
   DefaultEndpointDefinitionProcessor(ConnectionWrapper.getConnection()).processEndpointDefinitions(SampleController.endpoints)
-
 }
