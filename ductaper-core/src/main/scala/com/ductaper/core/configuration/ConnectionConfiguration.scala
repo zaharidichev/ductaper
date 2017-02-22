@@ -3,6 +3,7 @@ import com.typesafe.config.ConfigFactory
 
 import scala.util.{Failure, Properties, Success, Try}
 
+
 object ConfigurationEnvConstants{
 
   val _uri:String = "rabbit.Uri"
@@ -24,8 +25,8 @@ object ConfigurationEnvConstants{
       case (acc, c) => acc + c
     }
 
-    val prefix = v.split(".")(0).capitalize
-    val suffix = camel2Underscore(v.split(".")(1)).capitalize
+    val prefix = v.split('.')(0).toUpperCase
+    val suffix = camel2Underscore(v.split('.')(1)).toUpperCase
     prefix + "_" + suffix
   }
 }
@@ -34,7 +35,13 @@ object ConfigurationEnvConstants{
   * Created by zahari on 16/02/2017.
   */
 trait ConnectionConfiguration {
-  def uri: String = getValForConfProp(ConfigurationEnvConstants._uri).getOrElse("amqp://localhost")
+
+  private final val AMQP_PREFIX = "amqp://"
+
+
+  private def addAMQPPrefixIfNeeded(h:String):String = if (h.contains(AMQP_PREFIX)) h else AMQP_PREFIX + h
+
+  def uri: String = getValForConfProp(ConfigurationEnvConstants._uri).map(addAMQPPrefixIfNeeded).getOrElse("amqp://localhost")
   def userName: String = getValForConfProp(ConfigurationEnvConstants._userName).getOrElse("guest")
   def password: String = getValForConfProp(ConfigurationEnvConstants._password).getOrElse("guest")
   def port: Option[Int] = getValForConfProp(ConfigurationEnvConstants._port)
