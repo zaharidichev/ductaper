@@ -22,7 +22,7 @@ class Message(val messageProperties: MessageProps, val body: MessagePayload) {
 
   def headers: Option[Map[String, Any]] = messageProperties.property(Headers)
 
-  def header(name: String): Option[Any] = headers.map(x ⇒ x.get(name))
+  def header(name: String): Option[Any] = headers.flatMap(x ⇒ x.get(name))
 
   override def toString: String = {
     val bodyToString = body.asString
