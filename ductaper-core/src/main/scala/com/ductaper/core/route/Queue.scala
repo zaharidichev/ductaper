@@ -1,5 +1,7 @@
 package com.ductaper.core.route
 
+import java.util.UUID
+
 /**
  * @author Zahari Dichev <zaharidichev@gmail.com>.
  */
@@ -11,11 +13,14 @@ trait Queue{
   def nameOrEmpty: String = name.getOrElse("")
 }
 
+/*  Actively declare a server-named exclusive, autodelete, non-durable queue.
+  * The name of the new queue is held in the "queue" field of the {@link com.rabbitmq.client.AMQP.Queue.DeclareOk} result.
+  */
 case class QueueDeclare(
-  override val name: Option[String],
-  durable: Boolean = true,
-  exclusive: Boolean = false,
-  autoDelete: Boolean = false,
+  override val name: Option[String] = Some(UUID.randomUUID().toString),
+  durable: Boolean = false,
+  exclusive: Boolean = true,
+  autoDelete: Boolean = true,
   args: Map[String, AnyRef] = Map.empty
 ) extends Queue
 

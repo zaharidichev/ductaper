@@ -15,5 +15,7 @@ trait EndpointRoute{
 }
 
 case class UnicastEndpointRoute (override val queue:QueueDeclare, override val exchange:DirectExchange) extends EndpointRoute
-case class BroadCastEndpointRoute(override val queue:QueueDeclare, override val exchange:FanoutExchange) extends EndpointRoute
+case class BroadCastEndpointRoute(override val exchange:FanoutExchange) extends EndpointRoute{
+  override val queue: QueueDeclare = QueueDeclare()
+}
 
