@@ -15,7 +15,8 @@ import scala.util.{Failure, Success, Try}
 /**
  * Created by zahari on 07/02/2017.
  */
-class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends CloseCapable with EndpointDefinitionProcessor {
+class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper,messagePreprocessor: Message => Message)
+  extends CloseCapable with EndpointDefinitionProcessor {
 
   private val _logger = LoggerFactory.getLogger(classOf[DefaultEndpointDefinitionProcessor])
   private val _adminChannel: ChannelWrapper = connection.newChannel()
@@ -42,16 +43,19 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
     }
   }
 
+  private def withPreprocessor(f:Message=>Unit): Message => Unit = messagePreprocessor andThen f
+
   private def processInputOutputEndpointDefinition[T, R](e: InputOutputEndpointDefinition[T, R])(implicit
     inputManifest: Manifest[T],
     outputManifest: Manifest[R],
     converter: MessageConverter): CloseCapable = {
 
     val consumerChannel = connection.newChannel()
-    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (message) => {
+    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, withPreprocessor{ (message) => {
       val input = converter.fromPayload(message.body)(inputManifest)
       val output = e.functor(input)
       sendObjectAsResponse(output, message, consumerChannel)
+    }
     })
   }
 
@@ -59,9 +63,9 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
     outputManifest: Manifest[R],
     converter: MessageConverter): CloseCapable = {
     val consumerChannel = connection.newChannel()
-    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (message) => {
+    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, withPreprocessor{(message) => {
       sendObjectAsResponse(e.functor(), message, consumerChannel)
-    })
+    }})
   }
 
   private def processInputNoOutputEndpointDefinition[T](e: InputNoOutputEndpointDefinition[T])(implicit
@@ -69,10 +73,10 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
     converter: MessageConverter): CloseCapable = {
     val consumerChannel = connection.newChannel()
 
-    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (message) => {
+    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, withPreprocessor{(message) => {
       val input = converter.fromPayload(message.body)(inputManifest)
       e.functor(input)
-    })
+    }})
   }
 
   private def processNoInputNoOutputEndpointDefinition(e: NoInputNoOutputEndpointDefinition): CloseCapable = {
@@ -143,6 +147,6 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper) extends 
 }
 
 object DefaultEndpointDefinitionProcessor {
-  def apply(connection: ConnectionWrapper): DefaultEndpointDefinitionProcessor =
-    new DefaultEndpointDefinitionProcessor(connection)
+  def apply(connection: ConnectionWrapper,messagePreprocessor: Message => Message = m => m): DefaultEndpointDefinitionProcessor =
+    new DefaultEndpointDefinitionProcessor(connection,messagePreprocessor)
 }
