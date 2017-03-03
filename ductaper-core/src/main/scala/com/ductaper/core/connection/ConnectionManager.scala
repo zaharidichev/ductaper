@@ -2,6 +2,7 @@ package com.ductaper.core.connection
 
 import com.ductaper.core.channel.{ChannelManager, ChannelWrapper}
 import com.ductaper.core.events.Event.SystemEvent
+import com.ductaper.core.thinwrappers.ChannelThinWrapper
 import com.rabbitmq.client.{Channel, Connection, ShutdownListener, ShutdownSignalException}
 
 import scala.concurrent.blocking
@@ -18,10 +19,7 @@ class ConnectionManager(conn: Connection, eventListener: SystemEvent ⇒ Unit) e
     })
   }
 
-  override def newChannel(): ChannelWrapper = {
-    val c = createChannel(conn);
-    new ChannelManager(c, eventListener)
-  }
+  override def newChannel(): ChannelWrapper = new ChannelManager(ChannelThinWrapper(createChannel(conn)), eventListener)
 
   override def close(): Unit = {
     logger.info("Closing connection: " + conn)
