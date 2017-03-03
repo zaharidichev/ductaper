@@ -43,7 +43,7 @@ lazy val ductaper =
     .settings(inThisBuild(List(
       scalaVersion := "2.12.1",
       organization := "com.zahari",
-      version      := "0.1.0-SNAPSHOT",
+      version      := "0.1-SNAPSHOT",
       crossScalaVersions := Seq("2.10.4", "2.11.5"),
       scalacOptions ++= Seq("-Xfatal-warnings", "-feature","-deprecation"))))
     .settings(publishSettings: _*)
