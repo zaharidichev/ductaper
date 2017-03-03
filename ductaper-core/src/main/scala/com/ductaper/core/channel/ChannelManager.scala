@@ -48,7 +48,7 @@ class ChannelManager(chan: ChannelThinWrapper, eventListener: SystemEvent ⇒ Un
   * The name of the new queue is held in the "queue" field of the {@link com.rabbitmq.client.AMQP.Queue.DeclareOk} result.
   */
   override def declareQueue(): Try[Queue] = {
-    Try(chan.execQueueDeclare()).map(q => QueuePassive(Option(q.getQueue)))
+    Try(chan.queueDeclare()).map(q => QueuePassive(Option(q.getQueue)))
   }
 
   override def addAutoAckConsumer(queue: Queue, consumer: Message ⇒ Unit): CloseCapable = {

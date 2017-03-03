@@ -20,7 +20,7 @@ class ChannelThinWrapper(private val c: Channel) {
   }
 
   @throws[IOException]
-  def execQueueDeclare(): Queue.DeclareOk  = c.queueDeclare
+  def queueDeclare(): Queue.DeclareOk  = c.queueDeclare
 
   @throws[IOException]
   def exchangeDeclare(exchange: String, exchangeType: String, durable: Boolean, autoDelete: Boolean, arguments: Map[String, AnyRef]): Exchange.DeclareOk = {

@@ -1,11 +1,10 @@
-/*
+
 package com.ductaper.test
 
 import com.ductaper.core.channel.{ChannelManager, ChannelWrapper}
 import com.ductaper.core.events.Event.SystemEvent
 import com.ductaper.core.message.Key.{ContentType, Headers}
-import com.ductaper.core.message.{Message, MessagePayload, MessageProps}
-import com.ductaper.core.serialization.MessageSerialization
+import com.ductaper.core.message.{BasicKey, Message, MessagePayload, MessageProps}
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.impl.AMQImpl.Queue.DeclareOk
 import org.scalamock.scalatest.MockFactory
@@ -17,28 +16,29 @@ import org.scalatest.{Matchers, WordSpecLike}
 class MessagePayloadSpec extends WordSpecLike with Matchers with MockFactory {
 
   "MessagePayload" when {
-    val messageSerializationMock = mock[MessageSerialization]
+    //val messageSerializationMock = mock[MessageSerialization]
     val messagePropsMock = mock[MessageProps]
     val messagePayloadMock = mock[MessagePayload]
 
     "property" should {
       "call get on the props object" in {
         val message = Message(messagePropsMock, messagePayloadMock)
-        (messagePropsMock.get _) expects (ContentType)
+        (messagePropsMock.property[String] _) expects ContentType
         message.property(ContentType)
       }
 
     }
 
-    /*    "headers" should {
+    "headers" should {
       "call get for headers object" in {
         val message = Message(messagePropsMock, messagePayloadMock)
-        (messagePropsMock.get _) expects (Headers)
+        (messagePropsMock.property[Map[String,AnyRef]] _) expects Headers
         message.headers
       }
-    }*/
+    }
 
   }
 
 }
-*/
+
+
