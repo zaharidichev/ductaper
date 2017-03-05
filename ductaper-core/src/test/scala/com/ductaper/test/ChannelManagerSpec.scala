@@ -95,14 +95,11 @@ class ChannelManagerSpec extends WordSpecLike with Matchers with MockFactory {
 
       "when called without args should declare a server-named exclusive, autodelete, non-durable queue" in {
 
-        val queueDeclareFunc:MockFunction0[AMQP.Queue.DeclareOk] = channelMock.queueDeclare
+        (channelMock.queueDeclare _) expects () returning  new DeclareOk(QUEUE_NAME, 1, 1)
 
-        queueDeclareFunc expects () returning  new DeclareOk(QUEUE_NAME, 1, 1)
-
-        (channelMock.queueDeclare: () ⇒ AMQP.Queue.DeclareOk) expects () returning  new DeclareOk(QUEUE_NAME, 1, 1)
         val resultingQueue = channelOwner.declareQueue
         assert(resultingQueue.get.isInstanceOf[QueuePassive])
-        assert(resultingQueue.get.name == QUEUE_NAME)
+        assert(resultingQueue.get.name.get == QUEUE_NAME)
 
       }
 
