@@ -1,3 +1,4 @@
+[![CircleCI](https://circleci.com/gh/zaharidichev/ductaper.svg?style=shield)](https://circleci.com/gh/zaharidichev/ductaper)
 # Ductaper
 
 Ductaper is a framework that is responsible for solving the problem of service to service communication in microservice architectures. Some of its prominent features are: 
