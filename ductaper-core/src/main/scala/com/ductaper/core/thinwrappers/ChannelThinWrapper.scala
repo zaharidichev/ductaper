@@ -52,5 +52,5 @@ class ChannelThinWrapper(private val c: Channel) {
 }
 
 object ChannelThinWrapper {
-  def apply(c: Channel) = new ChannelThinWrapper(c)
+  def apply(c: Channel): ChannelThinWrapper = new ChannelThinWrapper(c)
 }
