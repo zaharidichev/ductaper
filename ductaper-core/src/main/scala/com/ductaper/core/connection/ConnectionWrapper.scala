@@ -4,6 +4,7 @@ import com.ductaper.core.channel.ChannelWrapper
 import com.ductaper.core.configuration.{ConnectionConfiguration, FileBasedConnectionConfiguration}
 import com.ductaper.core.events.Event.SystemEvent
 import com.ductaper.core.misc.CloseCapable
+import com.ductaper.core.thinwrappers.ConnectionThinWrapper
 import com.rabbitmq.client.ConnectionFactory
 import org.slf4j.LoggerFactory
 
@@ -28,7 +29,7 @@ object ConnectionWrapper {
 
   def getConnection(config: ConnectionConfiguration =  new FileBasedConnectionConfiguration()): ConnectionWrapper = {
     val nativeConnection = buildNativeConnectionFactory(config).newConnection()
-    new ConnectionManager(nativeConnection, x => ())
+    new ConnectionManager(ConnectionThinWrapper(nativeConnection), x => ())
     }
 
   private def buildNativeConnectionFactory(config: ConnectionConfiguration): ConnectionFactory = {

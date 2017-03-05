@@ -14,6 +14,7 @@ import com.ductaper.core.route.{Queue, QueueDeclare, QueuePassive, RoutingKey}
 import com.ductaper.core.thinwrappers.ChannelThinWrapper
 import com.rabbitmq.client.AMQP.{Exchange => RabbitExchange}
 import com.rabbitmq.client.impl.AMQImpl
+import org.scalamock.function.MockFunction0
 
 /**
  * Created by zahari on 06/02/2017.
@@ -91,6 +92,20 @@ class ChannelManagerSpec extends WordSpecLike with Matchers with MockFactory {
 
         channelOwner.declareQueue(queue)
       }
+
+      "when called without args should declare a server-named exclusive, autodelete, non-durable queue" in {
+
+        val queueDeclareFunc:MockFunction0[AMQP.Queue.DeclareOk] = channelMock.queueDeclare
+
+        queueDeclareFunc expects () returning  new DeclareOk(QUEUE_NAME, 1, 1)
+
+        (channelMock.queueDeclare: () ⇒ AMQP.Queue.DeclareOk) expects () returning  new DeclareOk(QUEUE_NAME, 1, 1)
+        val resultingQueue = channelOwner.declareQueue
+        assert(resultingQueue.get.isInstanceOf[QueuePassive])
+        assert(resultingQueue.get.name == QUEUE_NAME)
+
+      }
+
     }
 
 
