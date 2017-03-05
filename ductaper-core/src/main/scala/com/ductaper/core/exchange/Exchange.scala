@@ -12,7 +12,6 @@ trait Exchange {
   def args: Map[String, AnyRef]
   def exchangeType:ExchangeType
 }
-
 case class DirectExchange(
   override val name: String,
   override val durable: Boolean = true,
