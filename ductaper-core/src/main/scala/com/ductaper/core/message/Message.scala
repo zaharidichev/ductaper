@@ -29,5 +29,20 @@ class Message(val messageProperties: MessageProps, val body: MessagePayload) {
     s"Message($messageProperties, body=$bodyToString)"
   }
 
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[Message]
+
+  override def equals(other: Any): Boolean = other match {
+    case that: Message =>
+      (that canEqual this) &&
+        messageProperties == that.messageProperties &&
+        body == that.body
+    case _ => false
+  }
+
+  override def hashCode(): Int = {
+    val state = Seq(messageProperties, body)
+    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+  }
 }
 

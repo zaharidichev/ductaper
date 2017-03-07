@@ -21,6 +21,20 @@ class MessagePayload(data: Array[Byte]) {
 
   def asString: String = asString(Charset.defaultCharset())
 
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[MessagePayload]
+
+  override def equals(other: Any): Boolean = other match {
+    case that: MessagePayload =>
+      (that canEqual this) &&
+        _bytes == that._bytes
+    case _ => false
+  }
+
+  override def hashCode(): Int = {
+    val state = Seq(_bytes)
+    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+  }
 }
 
 object MessagePayload {
