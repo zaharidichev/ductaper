@@ -7,12 +7,9 @@ import com.ductaper.core.exchange.Exchange
 import com.ductaper.core.message.{Message, MessageProps}
 import com.ductaper.core.route.{BrokerRoutingData, RoutingKey}
 import com.ductaper.core.serialization.MessageConverter
-import com.sun.javafx.scene.layout.region.Margins.Converter
-
-import scala.concurrent.duration.{Duration, TimeUnit}
+import scala.concurrent.duration.{Duration}
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Try}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by zahari on 20/02/2017.
@@ -23,7 +20,7 @@ class MQClientImpl(private val connectionWrapper: ConnectionWrapper) extends MQC
   type OnChannelFunc = ChannelWrapper => Unit
 
   def send[T](data: T, routingData: BrokerRoutingData, messageProps: MessageProps)
-             (implicit converter: MessageConverter): Unit = {
+             (implicit converter: MessageConverter, executionContext: ExecutionContext): Unit = {
     Future {
         execOnChannel(chan => {
           val payload = converter.toPayload(data)
@@ -34,7 +31,7 @@ class MQClientImpl(private val connectionWrapper: ConnectionWrapper) extends MQC
 
 
 
-  private def addTimeoutHookToPromise[R](p: Promise[Try[R]],duration: Duration) = {
+  private def addTimeoutHookToPromise[R](p: Promise[Try[R]],duration: Duration)(implicit executionContext: ExecutionContext) = {
     Future {
         Thread.sleep(duration.toMillis)
         p.trySuccess(Failure(new MqTimeoutException("Response took more than " + duration.toMillis  + " milliseconds to arrive")))
@@ -48,7 +45,7 @@ class MQClientImpl(private val connectionWrapper: ConnectionWrapper) extends MQC
   override def sendAndReceive[T,R](data:T, routingData: BrokerRoutingData,
                           messageProps: MessageProps,
                           timeout: Duration)
-                         (implicit converter: MessageConverter,responseManifest:Manifest[R]): Future[Try[R]] = {
+                         (implicit converter: MessageConverter,responseManifest:Manifest[R],executionContext: ExecutionContext): Future[Try[R]] = {
 
     val chann = connectionWrapper.newChannel()
     val callBackQueue = chann.declareQueue.get
