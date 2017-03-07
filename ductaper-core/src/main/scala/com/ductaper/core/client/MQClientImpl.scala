@@ -51,8 +51,8 @@ class MQClientImpl(private val connectionWrapper: ConnectionWrapper) extends MQC
     val callBackQueue = chann.declareQueue.get
 
     val messagePayload = converter.toPayload(data)
-    val messageProps = MessageProps().replyTo(BrokerRoutingData(Exchange.DEFAULT_EXCHANGE,RoutingKey(callBackQueue.name.getOrElse(""))))
-    val messageToSend = Message(messageProps,messagePayload)
+    val messagePropsWithReplyToRoute = messageProps.replyTo(BrokerRoutingData(Exchange.DEFAULT_EXCHANGE,RoutingKey(callBackQueue.name.getOrElse(""))))
+    val messageToSend = Message(messagePropsWithReplyToRoute,messagePayload)
 
     val promise: Promise[Try[R]] = Promise()
 
