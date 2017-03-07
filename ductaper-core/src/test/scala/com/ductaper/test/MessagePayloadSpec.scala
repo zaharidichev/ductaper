@@ -15,10 +15,11 @@ import org.scalatest.{Matchers, WordSpecLike}
  */
 class MessagePayloadSpec extends WordSpecLike with Matchers with MockFactory {
 
+  class MockableMessagePayload extends MessagePayload(Array.emptyByteArray)
+
   "MessagePayload" when {
-    //val messageSerializationMock = mock[MessageSerialization]
     val messagePropsMock = mock[MessageProps]
-    val messagePayloadMock = mock[MessagePayload]
+    val messagePayloadMock = mock[MockableMessagePayload]
 
     "property" should {
       "call get on the props object" in {
