@@ -1,7 +1,7 @@
 package com.ductaper.dsl
 
 import com.ductaper.core.exchange.{DirectExchange, Exchange, FanoutExchange}
-import com.ductaper.core.route.{BrokerRoutingData, Queue, QueueDeclare, RoutingKey}
+import com.ductaper.core.route.{BrokerRoutingData, QueueDeclare, RoutingKey}
 
 /**
   * Created by zahari on 08/02/2017.

@@ -3,8 +3,8 @@ package com.ductaper.core.message
 import java.util.Date
 
 import com.ductaper.core.message.DeliveryMode.Unspecified
-import com.ductaper.core.route.{BrokerRoutingData, Queue, RoutingKey}
-import com.rabbitmq.client.AMQP.{BasicProperties, Exchange}
+import com.ductaper.core.route.{BrokerRoutingData, RoutingKey}
+import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client.AMQP.BasicProperties.Builder
 
 import scala.collection.JavaConverters._

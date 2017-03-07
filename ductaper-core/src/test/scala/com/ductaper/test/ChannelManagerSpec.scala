@@ -1,20 +1,18 @@
 
 package com.ductaper.test
 
-import com.ductaper.core.events.Event.SystemEvent
-import com.ductaper.core.message.Key.ContentType
 import com.ductaper.core.channel.{ChannelManager, ChannelWrapper}
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.{Matchers, WordSpecLike}
-import com.rabbitmq.client.{AMQP, Channel, Consumer, DefaultConsumer}
-import com.rabbitmq.client.impl.AMQImpl.Queue.DeclareOk
-import com.ductaper.core.exchange.{DirectExchange, Exchange}
-import com.ductaper.core.message.{Message, MessagePayload, MessageProps}
-import com.ductaper.core.route.{Queue, QueueDeclare, QueuePassive, RoutingKey}
+import com.ductaper.core.events.Event.SystemEvent
+import com.ductaper.core.exchange.DirectExchange
+import com.ductaper.core.message.Message
+import com.ductaper.core.route.{QueueDeclare, QueuePassive, RoutingKey}
 import com.ductaper.core.thinwrappers.ChannelThinWrapper
 import com.rabbitmq.client.AMQP.{Exchange => RabbitExchange}
 import com.rabbitmq.client.impl.AMQImpl
-import org.scalamock.function.MockFunction0
+import com.rabbitmq.client.impl.AMQImpl.Queue.DeclareOk
+import com.rabbitmq.client.{AMQP, Consumer}
+import org.scalamock.scalatest.MockFactory
+import org.scalatest.{Matchers, WordSpecLike}
 
 /**
  * Created by zahari on 06/02/2017.

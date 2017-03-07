@@ -3,7 +3,7 @@ package com.ductaper.core.connection
 import com.ductaper.core.channel.{ChannelManager, ChannelWrapper}
 import com.ductaper.core.events.Event.SystemEvent
 import com.ductaper.core.thinwrappers.{ChannelThinWrapper, ConnectionThinWrapper}
-import com.rabbitmq.client.{Channel, Connection, ShutdownListener, ShutdownSignalException}
+import com.rabbitmq.client.{Channel, ShutdownSignalException}
 
 import scala.concurrent.blocking
 

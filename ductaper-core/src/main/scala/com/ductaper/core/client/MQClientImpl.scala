@@ -7,7 +7,8 @@ import com.ductaper.core.exchange.Exchange
 import com.ductaper.core.message.{Message, MessageProps}
 import com.ductaper.core.route.{BrokerRoutingData, RoutingKey}
 import com.ductaper.core.serialization.MessageConverter
-import scala.concurrent.duration.{Duration}
+
+import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Try}
 

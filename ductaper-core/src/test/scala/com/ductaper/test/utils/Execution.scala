@@ -1,7 +1,5 @@
 package com.ductaper.test.utils
 
-import java.util.concurrent.Executor
-
 import scala.concurrent.ExecutionContext
 
 /**

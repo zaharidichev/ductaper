@@ -3,8 +3,8 @@ package com.ductaper.core.thinwrappers
 import java.io.IOException
 
 import com.rabbitmq.client.AMQP.{Exchange, Queue}
-import com.rabbitmq.client.{AMQP, Consumer}
-import com.rabbitmq.client._
+import com.rabbitmq.client.{AMQP, Consumer, _}
+
 import scala.collection.JavaConverters._
 
 

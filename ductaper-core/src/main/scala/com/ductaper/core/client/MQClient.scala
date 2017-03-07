@@ -4,8 +4,8 @@ import com.ductaper.core.message.MessageProps
 import com.ductaper.core.route.BrokerRoutingData
 import com.ductaper.core.serialization.MessageConverter
 
+import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration.{Duration, TimeUnit}
 import scala.util.Try
 
 /**

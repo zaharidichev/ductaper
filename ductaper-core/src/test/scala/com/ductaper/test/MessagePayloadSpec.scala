@@ -1,12 +1,8 @@
 
 package com.ductaper.test
 
-import com.ductaper.core.channel.{ChannelManager, ChannelWrapper}
-import com.ductaper.core.events.Event.SystemEvent
 import com.ductaper.core.message.Key.{ContentType, Headers}
-import com.ductaper.core.message.{BasicKey, Message, MessagePayload, MessageProps}
-import com.rabbitmq.client.Channel
-import com.rabbitmq.client.impl.AMQImpl.Queue.DeclareOk
+import com.ductaper.core.message.{Message, MessagePayload, MessageProps}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpecLike}
 

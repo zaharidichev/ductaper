@@ -1,7 +1,6 @@
 package com.ductaper.test
 
 import com.ductaper.core.exchange._
-import com.ductaper.core.route.QueueDeclare
 import org.scalatest.{FlatSpec, Matchers}
 
 /**

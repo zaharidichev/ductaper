@@ -6,14 +6,14 @@ import com.ductaper.core.channel.{ChannelWrapper, ConsumerHandle}
 import com.ductaper.core.client.MQClientImpl
 import com.ductaper.core.connection.ConnectionWrapper
 import com.ductaper.core.error.MqTimeoutException
-import com.ductaper.core.exchange.{DirectExchange, Exchange}
+import com.ductaper.core.exchange.Exchange
 import com.ductaper.core.message.{Message, MessagePayload, MessageProps}
 import com.ductaper.core.misc.CloseCapable
 import com.ductaper.core.route.{BrokerRoutingData, Queue, QueueDeclare, RoutingKey}
 import com.ductaper.core.serialization.MessageConverter
+import com.ductaper.test.utils.Execution.currentThreadExecutionContext
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FlatSpec, WordSpecLike}
-import utils.Execution.currentThreadExecutionContext
+import org.scalatest.FlatSpec
 
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}

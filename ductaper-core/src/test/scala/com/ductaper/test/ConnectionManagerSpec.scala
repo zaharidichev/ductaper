@@ -1,11 +1,8 @@
 package com.ductaper.test
 
 import com.ductaper.core.connection.ConnectionManager
-import com.ductaper.core.events.Event.SystemEvent
-import com.ductaper.core.route.QueueDeclare
-import com.ductaper.core.thinwrappers.{ChannelThinWrapper, ConnectionThinWrapper}
-import com.rabbitmq.client.impl.AMQImpl.Queue.DeclareOk
-import com.rabbitmq.client.{AMQP, Consumer, ShutdownListener, ShutdownSignalException}
+import com.ductaper.core.thinwrappers.ConnectionThinWrapper
+import com.rabbitmq.client.ShutdownListener
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpecLike}
 

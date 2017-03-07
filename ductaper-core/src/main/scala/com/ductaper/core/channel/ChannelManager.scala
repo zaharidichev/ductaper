@@ -12,7 +12,6 @@ import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client._
 import org.slf4j.LoggerFactory
 
-import scala.collection.JavaConverters
 import scala.util.{Failure, Try}
 
 /**

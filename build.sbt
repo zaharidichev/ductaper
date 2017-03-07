@@ -1,6 +1,6 @@
 import sbt.Keys.libraryDependencies
+
 import scalariform.formatter.preferences._
-import sbt.ProjectExtra
 
 
 lazy val `ductaper-core` = project.

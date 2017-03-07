@@ -1,9 +1,7 @@
 package com.ductaper.dsl.container
 
-import com.ductaper.dsl.{ConcatenatedEndpointDefinition, EndpointDefinition}
 import com.ductaper.core.serialization.MessageConverter
-
-import scala.util.{Failure, Success}
+import com.ductaper.dsl.{ConcatenatedEndpointDefinition, EndpointDefinition}
 
 /**
   * Created by zahari on 14/02/2017.

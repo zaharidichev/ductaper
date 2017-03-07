@@ -5,8 +5,8 @@ import java.util.Date
 
 import com.ductaper.core.exchange.DirectExchange
 import com.ductaper.core.message.DeliveryMode.Persistent
-import com.ductaper.core.message.{Key, MessageProps}
 import com.ductaper.core.message.Key._
+import com.ductaper.core.message.MessageProps
 import com.ductaper.core.route.{BrokerRoutingData, RoutingKey}
 import org.scalatest.{FlatSpec, Matchers}
 
