@@ -1,16 +1,15 @@
 package com.ductaper.core.connection
 
+import scala.concurrent.blocking
 import com.ductaper.core.channel.{ChannelManager, ChannelWrapper}
 import com.ductaper.core.events.Event.SystemEvent
 import com.ductaper.core.thinwrappers.{ChannelThinWrapper, ConnectionThinWrapper}
 import com.rabbitmq.client.{Channel, ShutdownSignalException}
 
-import scala.concurrent.blocking
-
 /**
- * Created by zahari on 06/02/2017.
- */
-class ConnectionManager(conn: ConnectionThinWrapper, eventListener: SystemEvent ⇒ Unit) extends ConnectionWrapper {
+  *Created by zahari on 06/02/2017.
+  */
+class ConnectionManager(conn: ConnectionThinWrapper, eventListener: SystemEvent => Unit) extends ConnectionWrapper {
 
   if (conn.isOpen) {
     logger.info("Opened connection " + conn)
@@ -33,5 +32,6 @@ class ConnectionManager(conn: ConnectionThinWrapper, eventListener: SystemEvent 
 }
 
 object ConnectionManager {
-  def apply(conn: ConnectionThinWrapper, eventListener: SystemEvent ⇒ Unit): ConnectionManager = new ConnectionManager(conn, eventListener)
+  def apply(conn: ConnectionThinWrapper, eventListener: SystemEvent => Unit): ConnectionManager =
+    new ConnectionManager(conn, eventListener)
 }

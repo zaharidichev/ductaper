@@ -7,8 +7,8 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
- * Created by zahari on 05/03/2017.
- */
+  * Created by zahari on 05/03/2017.
+  */
 class ConnectionManagerSpec extends WordSpecLike with Matchers with MockFactory {
 
   //noinspection ScalaStyle
@@ -18,7 +18,7 @@ class ConnectionManagerSpec extends WordSpecLike with Matchers with MockFactory 
   (connectionThinWrapperMock.isOpen _) expects () returning true
   (connectionThinWrapperMock.addShutdownListener: (ShutdownListener) => Unit) expects (*)
 
-  val connectionWrapper = ConnectionManager(connectionThinWrapperMock,(x) => ())
+  val connectionWrapper = ConnectionManager(connectionThinWrapperMock, (x) => ())
 
   "ConnectionManager" when {
 
@@ -30,7 +30,6 @@ class ConnectionManagerSpec extends WordSpecLike with Matchers with MockFactory 
       }
 
     }
-
 
     "close" should {
 

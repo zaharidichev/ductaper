@@ -3,8 +3,8 @@ package com.ductaper.core.events
 import com.ductaper.core.events.Event.SystemEvent
 
 /**
- * @author Zahari Dichev <zaharidichev@gmail.com>.
- */
+  * @author Zahari Dichev <zaharidichev@gmail.com>.
+  */
 object Event {
 
   trait SystemEvent
@@ -24,6 +24,8 @@ object Event {
 }
 
 object Listener {
-  def noOpEventListener: SystemEvent ⇒ Unit = (x: SystemEvent) ⇒ {}
-  def printingEventListener: SystemEvent ⇒ Unit = (x: SystemEvent) ⇒ println(x)
+  def noOpEventListener: SystemEvent => Unit = (x: SystemEvent) => {}
+  // scalastyle:off println
+  def printingEventListener: SystemEvent => Unit = (x: SystemEvent) => println(x)
+  // scalastyle:on println
 }

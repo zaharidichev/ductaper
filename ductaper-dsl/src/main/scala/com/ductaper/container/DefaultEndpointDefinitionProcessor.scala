@@ -1,5 +1,6 @@
 package com.ductaper.dsl.container
 
+import scala.util.{Failure, Success, Try}
 import com.ductaper.core.channel.ChannelWrapper
 import com.ductaper.core.connection.ConnectionWrapper
 import com.ductaper.core.message.Key.ReplyTo
@@ -10,12 +11,8 @@ import com.ductaper.core.serialization.MessageConverter
 import com.ductaper.dsl._
 import org.slf4j.LoggerFactory
 
-import scala.util.{Failure, Success, Try}
-
-/**
- * Created by zahari on 07/02/2017.
- */
-class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper,messagePreprocessor: Message => Message)
+class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper,
+                                         messagePreprocessor: Message => Message)
   extends CloseCapable with EndpointDefinitionProcessor {
 
   private val _logger = LoggerFactory.getLogger(classOf[DefaultEndpointDefinitionProcessor])
@@ -35,7 +32,10 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper,messagePr
 
   }
 
-  private def sendObjectAsResponse[T](objectToSend: T, request: Message, chan: ChannelWrapper)(implicit converter: MessageConverter) {
+  private def sendObjectAsResponse[T](objectToSend: T,
+                                      request: Message,
+                                      chan: ChannelWrapper)
+                                     (implicit converter: MessageConverter) {
     lazy val messageToSend = Message(MessageProps(), converter.toPayload(objectToSend))
     request.property(ReplyTo) match {
       case Some(route) => chan.send(route, messageToSend)
@@ -43,40 +43,48 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper,messagePr
     }
   }
 
-  private def withPreprocessor(f:Message=>Unit): Message => Unit = messagePreprocessor andThen f
+  private def withPreprocessor(f: Message => Unit): Message => Unit = messagePreprocessor andThen f
 
-  private def processInputOutputEndpointDefinition[T, R](e: InputOutputEndpointDefinition[T, R])(implicit
-    inputManifest: Manifest[T],
-    outputManifest: Manifest[R],
-    converter: MessageConverter): CloseCapable = {
+  private def processInputOutputEndpointDefinition[T, R](e: InputOutputEndpointDefinition[T, R])
+                                                        (implicit inputManifest: Manifest[T],
+                                                         outputManifest: Manifest[R],
+                                                         converter: MessageConverter): CloseCapable = {
 
     val consumerChannel = connection.newChannel()
-    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, withPreprocessor{ (message) => {
-      val input = converter.fromPayload(message.body)(inputManifest)
-      val output = e.functor(input)
-      sendObjectAsResponse(output, message, consumerChannel)
-    }
+    consumerChannel.addAutoAckConsumer(
+      e.endpointRoute.queue,
+      withPreprocessor { (message) =>
+        {
+          val input = converter.fromPayload(message.body)(inputManifest)
+          val output = e.functor(input)
+          sendObjectAsResponse(output, message, consumerChannel)
+        }
+      }
+    )
+  }
+
+  private def processNoInputOutputEndpointDefinition[R](e: NoInputOutputEndpointDefinition[R])
+                                                       (implicit outputManifest: Manifest[R],
+                                                        converter: MessageConverter): CloseCapable = {
+    val consumerChannel = connection.newChannel()
+    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, withPreprocessor { (message) =>
+      {
+        sendObjectAsResponse(e.functor(), message, consumerChannel)
+      }
     })
   }
 
-  private def processNoInputOutputEndpointDefinition[R](e: NoInputOutputEndpointDefinition[R])(implicit
-    outputManifest: Manifest[R],
-    converter: MessageConverter): CloseCapable = {
-    val consumerChannel = connection.newChannel()
-    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, withPreprocessor{(message) => {
-      sendObjectAsResponse(e.functor(), message, consumerChannel)
-    }})
-  }
-
-  private def processInputNoOutputEndpointDefinition[T](e: InputNoOutputEndpointDefinition[T])(implicit
-    inputManifest: Manifest[T],
-    converter: MessageConverter): CloseCapable = {
+  private def processInputNoOutputEndpointDefinition[T](e: InputNoOutputEndpointDefinition[T])
+                                                       (implicit inputManifest: Manifest[T],
+                                                        converter: MessageConverter): CloseCapable = {
     val consumerChannel = connection.newChannel()
 
-    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, withPreprocessor{(message) => {
-      val input = converter.fromPayload(message.body)(inputManifest)
-      e.functor(input)
-    }})
+    consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, withPreprocessor { (message) =>
+      {
+        val input = converter.fromPayload(message.body)(inputManifest)
+        e.functor(input)
+      }
+    })
   }
 
   private def processNoInputNoOutputEndpointDefinition(e: NoInputNoOutputEndpointDefinition): CloseCapable = {
@@ -84,7 +92,7 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper,messagePr
     consumerChannel.addAutoAckConsumer(e.endpointRoute.queue, (_) => e.functor())
   }
 
-  private def getEndpointSignature(e: EndpointDefinition):String = {
+  private def getEndpointSignature(e: EndpointDefinition): String = {
     e match {
       case end: InputOutputEndpointDefinition[_, _] => "[" + end.inputManifest.runtimeClass + " => " + end.outputManifest.runtimeClass + "]"
       case end: NoInputOutputEndpointDefinition[_] => "[() => " + end.outputManifest.runtimeClass + "]"
@@ -95,11 +103,10 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper,messagePr
 
   private def registerConsumerHandles(handles: Seq[CloseCapable]) = _consumerHandles ++= handles
 
-
   private def processEndpointDefinition(e: EndpointDefinition)(implicit converter: MessageConverter): Seq[CloseCapable] = {
 
-    //Internal function for easing things up
-    def process(e:EndpointDefinition)(implicit converter: MessageConverter): CloseCapable = {
+    // Internal function for easing things up
+    def process(e: EndpointDefinition)(implicit converter: MessageConverter): CloseCapable = {
       e match {
         case end: InputOutputEndpointDefinition[_, _] => {
           implicit val inputManifest = end.inputManifest
@@ -137,7 +144,6 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper,messagePr
     })
   }
 
-
   override def close(): Unit = {
     consumerHandles.foreach(_.close())
     adminChannel.close()
@@ -147,6 +153,6 @@ class DefaultEndpointDefinitionProcessor(connection: ConnectionWrapper,messagePr
 }
 
 object DefaultEndpointDefinitionProcessor {
-  def apply(connection: ConnectionWrapper,messagePreprocessor: Message => Message = m => m): DefaultEndpointDefinitionProcessor =
-    new DefaultEndpointDefinitionProcessor(connection,messagePreprocessor)
+  def apply(connection: ConnectionWrapper, messagePreprocessor: Message => Message = m => m): DefaultEndpointDefinitionProcessor =
+    new DefaultEndpointDefinitionProcessor(connection, messagePreprocessor)
 }

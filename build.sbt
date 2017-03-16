@@ -1,9 +1,10 @@
 import sbt.Keys.libraryDependencies
+import org.scalastyle.sbt.ScalastylePlugin
 
-import scalariform.formatter.preferences._
 
 lazy val `ductaper-core` = project
   .settings(publishSettings: _*)
+  .settings(ScalastylePlugin.rawScalastyleSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
       "com.rabbitmq" % "amqp-client" % "3.4.2",
@@ -33,6 +34,7 @@ lazy val ductaper =
   project
     .in(file("."))
     .aggregate(`ductaper-core`, `ductaper-dsl`)
+    .settings(ScalastylePlugin.rawScalastyleSettings: _*)
     .settings(inThisBuild(List(
       scalaVersion := "2.12.1",
       organization := "com.zahari",
@@ -41,8 +43,10 @@ lazy val ductaper =
       scalacOptions ++= Seq("-Xfatal-warnings", "-feature", "-deprecation")
     )))
     .settings(publishSettings: _*)
+
+
 /*  scalariformSettings ++ Seq(
-  ScalariformKeys.preferences := ScalariformKeys.preferences.value
+     ScalariformKeys.preferences := ScalariformKeys.preferences.value
     .setPreference(AlignSingleLineCaseStatements, true)
     .setPreference(DoubleIndentClassDeclaration, true)
     .setPreference(PreserveDanglingCloseParenthesis, true)

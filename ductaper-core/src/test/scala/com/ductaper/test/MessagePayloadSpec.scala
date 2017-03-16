@@ -1,4 +1,3 @@
-
 package com.ductaper.test
 
 import com.ductaper.core.message.Key.{ContentType, Headers}
@@ -7,8 +6,8 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpecLike}
 
 /**
- * Created by zahari on 07/02/2017.
- */
+  * Created by zahari on 07/02/2017.
+  */
 class MessagePayloadSpec extends WordSpecLike with Matchers with MockFactory {
 
   class MockableMessagePayload extends MessagePayload(Array.emptyByteArray)
@@ -29,7 +28,7 @@ class MessagePayloadSpec extends WordSpecLike with Matchers with MockFactory {
     "headers" should {
       "call get for headers object" in {
         val message = Message(messagePropsMock, messagePayloadMock)
-        (messagePropsMock.property[Map[String,AnyRef]] _) expects Headers
+        (messagePropsMock.property[Map[String, AnyRef]] _) expects Headers
         message.headers
       }
     }
@@ -37,5 +36,3 @@ class MessagePayloadSpec extends WordSpecLike with Matchers with MockFactory {
   }
 
 }
-
-

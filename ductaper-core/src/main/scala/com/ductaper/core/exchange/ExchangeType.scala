@@ -1,9 +1,8 @@
 package com.ductaper.core.exchange
 
 /**
- * @author Zahari Dichev <zaharidichev@gmail.com>.
- */
-
+  * @author Zahari Dichev <zaharidichev@gmail.com>.
+  */
 abstract class ExchangeType(val name: String)
 
 object ExchangeType {
@@ -12,4 +11,3 @@ object ExchangeType {
   case object Fanout extends ExchangeType("fanout")
   case object Headers extends ExchangeType("headers")
 }
-

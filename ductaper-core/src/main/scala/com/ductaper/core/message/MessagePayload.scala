@@ -1,12 +1,11 @@
 package com.ductaper.core.message
 
 import java.nio.charset.Charset
-
 import com.ductaper.core.serialization.MessageConverter
 
 /**
- * @author Zahari Dichev <zaharidichev@gmail.com>.
- */
+  * @author Zahari Dichev <zaharidichev@gmail.com>.
+  */
 class MessagePayload(data: Array[Byte]) {
 
   def this() = this(Array.emptyByteArray)
@@ -20,7 +19,6 @@ class MessagePayload(data: Array[Byte]) {
   def asString(charset: Charset): String = new String(_bytes, charset)
 
   def asString: String = asString(Charset.defaultCharset())
-
 
   def canEqual(other: Any): Boolean = other.isInstanceOf[MessagePayload]
 
@@ -44,4 +42,3 @@ object MessagePayload {
   def apply(string: String): MessagePayload = new MessagePayload(string.getBytes(Charset.defaultCharset()))
   def apply[T](toSerialize: T)(implicit converter: MessageConverter): MessagePayload = converter.toPayload(toSerialize)
 }
-

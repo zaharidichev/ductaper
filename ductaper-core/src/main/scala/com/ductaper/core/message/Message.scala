@@ -4,9 +4,8 @@ import com.ductaper.core.message.Key.Headers
 import com.rabbitmq.client.AMQP.BasicProperties
 
 /**
- * @author Zahari Dichev <zaharidichev@gmail.com>.
- */
-
+  * @author Zahari Dichev <zaharidichev@gmail.com>.
+  */
 object Message {
   def apply(messageProperties: MessageProps, body: MessagePayload): Message = new Message(messageProperties, body)
   def apply(messageProperties: BasicProperties, body: Array[Byte]): Message = {
@@ -22,13 +21,12 @@ class Message(val messageProperties: MessageProps, val body: MessagePayload) {
 
   def headers: Option[Map[String, Any]] = messageProperties.property(Headers)
 
-  def header(name: String): Option[Any] = headers.flatMap(x ⇒ x.get(name))
+  def header(name: String): Option[Any] = headers.flatMap(x => x.get(name))
 
   override def toString: String = {
     val bodyToString = body.asString
     s"Message($messageProperties, body=$bodyToString)"
   }
-
 
   def canEqual(other: Any): Boolean = other.isInstanceOf[Message]
 
@@ -45,4 +43,3 @@ class Message(val messageProperties: MessageProps, val body: MessagePayload) {
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
-

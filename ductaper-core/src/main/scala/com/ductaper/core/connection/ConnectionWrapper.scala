@@ -9,9 +9,8 @@ import com.rabbitmq.client.ConnectionFactory
 import org.slf4j.LoggerFactory
 
 /**
- * @author Zahari Dichev <zaharidichev@gmail.com>.
- */
-
+  * @author Zahari Dichev <zaharidichev@gmail.com>.
+  */
 trait ConnectionWrapper extends CloseCapable {
   val logger = LoggerFactory.getLogger(classOf[ConnectionWrapper])
   def newChannel(): ChannelWrapper
@@ -20,17 +19,17 @@ trait ConnectionWrapper extends CloseCapable {
 trait ConnectionWrapperBuilder {
 
   def connectionTimeout(i: Int): ConnectionWrapperBuilder
-  def eventListener(i: SystemEvent ⇒ Unit): ConnectionWrapperBuilder
+  def eventListener(i: SystemEvent => Unit): ConnectionWrapperBuilder
   def reconnectionStrategy(i: ReconnectionStrategy): ConnectionWrapperBuilder
   def build(): ConnectionWrapper
 }
 
 object ConnectionWrapper {
 
-  def getConnection(config: ConnectionConfiguration =  new FileBasedConnectionConfiguration()): ConnectionWrapper = {
+  def getConnection(config: ConnectionConfiguration = new FileBasedConnectionConfiguration()): ConnectionWrapper = {
     val nativeConnection = buildNativeConnectionFactory(config).newConnection()
     new ConnectionManager(ConnectionThinWrapper(nativeConnection), x => ())
-    }
+  }
 
   private def buildNativeConnectionFactory(config: ConnectionConfiguration): ConnectionFactory = {
     val nativeConnectionFactory = new ConnectionFactory()
@@ -40,4 +39,3 @@ object ConnectionWrapper {
     nativeConnectionFactory
   }
 }
-

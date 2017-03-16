@@ -1,33 +1,30 @@
 package com.ductaper.core.message
 
 import java.util.Date
-
+import scala.collection.JavaConverters._
+import scala.language.implicitConversions
 import com.ductaper.core.message.DeliveryMode.Unspecified
 import com.ductaper.core.route.{BrokerRoutingData, RoutingKey}
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client.AMQP.BasicProperties.Builder
 
-import scala.collection.JavaConverters._
-import scala.language.implicitConversions
-
 /**
- * @author Zahari Dichev <zaharidichev@gmail.com>.
- */
-
+  * @author Zahari Dichev <zaharidichev@gmail.com>.
+  */
 case class MessageProps(
-  contentType: Option[String] = None,
-  contentEncoding: Option[String] = None,
-  messageType: Option[String] = None,
-  timestamp: Option[Date] = None,
-  messageId: Option[String] = None,
-  replyTo: Option[BrokerRoutingData] = None,
-  deliveryMode: Option[DeliveryMode] = None,
-  userId: Option[String] = None,
-  expiration: Option[String] = None,
-  priority: Option[Int] = None,
-  headers: Option[Map[String, AnyRef]] = None,
-  correlationId: Option[String] = None,
-  appId: Option[String] = None
+    contentType: Option[String] = None,
+    contentEncoding: Option[String] = None,
+    messageType: Option[String] = None,
+    timestamp: Option[Date] = None,
+    messageId: Option[String] = None,
+    replyTo: Option[BrokerRoutingData] = None,
+    deliveryMode: Option[DeliveryMode] = None,
+    userId: Option[String] = None,
+    expiration: Option[String] = None,
+    priority: Option[Int] = None,
+    headers: Option[Map[String, AnyRef]] = None,
+    correlationId: Option[String] = None,
+    appId: Option[String] = None
 ) {
   def contentType(i: String): MessageProps = copy(contentType = Some(i))
   def contentEncoding(i: String): MessageProps = copy(contentEncoding = Some(i))
@@ -55,26 +52,26 @@ case class MessageProps(
 
   def toJavaBasicProps: BasicProperties = {
     val nativePropertiesBuilder = new Builder;
-    contentType.foreach(x ⇒ nativePropertiesBuilder.contentType(x))
-    contentEncoding.foreach(x ⇒ nativePropertiesBuilder.contentEncoding(x))
-    messageType.foreach(x ⇒ nativePropertiesBuilder.`type`(x.toString))
-    timestamp.foreach(x ⇒ nativePropertiesBuilder.timestamp(x))
-    messageId.foreach(x ⇒ nativePropertiesBuilder.messageId(x.toString))
-    replyTo.foreach(x ⇒ nativePropertiesBuilder.replyTo(x.routingKey.name))
-    deliveryMode.foreach(x ⇒ nativePropertiesBuilder.deliveryMode(x.mode))
-    userId.foreach(x ⇒ nativePropertiesBuilder.userId(x.toString))
-    expiration.foreach(x ⇒ nativePropertiesBuilder.expiration(x.toString))
-    priority.foreach(x ⇒ nativePropertiesBuilder.priority(x))
-    headers.foreach(x ⇒ nativePropertiesBuilder.headers(mapAsJavaMap(x)))
-    correlationId.foreach(x ⇒ nativePropertiesBuilder.correlationId(x.toString))
-    appId.foreach(x ⇒ nativePropertiesBuilder.appId(x.toString))
+    contentType.foreach(x => nativePropertiesBuilder.contentType(x))
+    contentEncoding.foreach(x => nativePropertiesBuilder.contentEncoding(x))
+    messageType.foreach(x => nativePropertiesBuilder.`type`(x.toString))
+    timestamp.foreach(x => nativePropertiesBuilder.timestamp(x))
+    messageId.foreach(x => nativePropertiesBuilder.messageId(x.toString))
+    replyTo.foreach(x => nativePropertiesBuilder.replyTo(x.routingKey.name))
+    deliveryMode.foreach(x => nativePropertiesBuilder.deliveryMode(x.mode))
+    userId.foreach(x => nativePropertiesBuilder.userId(x.toString))
+    expiration.foreach(x => nativePropertiesBuilder.expiration(x.toString))
+    priority.foreach(x => nativePropertiesBuilder.priority(x))
+    headers.foreach(x => nativePropertiesBuilder.headers(mapAsJavaMap(x)))
+    correlationId.foreach(x => nativePropertiesBuilder.correlationId(x.toString))
+    appId.foreach(x => nativePropertiesBuilder.appId(x.toString))
     nativePropertiesBuilder.build();
   }
 
 }
 
 sealed class BasicKey[T](val getterFunc: MessageProps => Option[T]) {
-  //def --> (value:T) = BasicKeyValue(this,value)
+  // def --> (value:T) = BasicKeyValue(this,value)
 }
 
 case class BasicKeyValue[T](key: BasicKey[T], value: T)
@@ -99,7 +96,7 @@ object MessageProps {
   def apply: MessageProps = new MessageProps()
   def apply(nativeProperties: BasicProperties): MessageProps = {
     new MessageProps()
-      .replyTo(BrokerRoutingData(com.ductaper.core.exchange.Exchange.DEFAULT_EXCHANGE,RoutingKey(nativeProperties.getReplyTo)))
+      .replyTo(BrokerRoutingData(com.ductaper.core.exchange.Exchange.DEFAULT_EXCHANGE, RoutingKey(nativeProperties.getReplyTo)))
       .timestamp(nativeProperties.getTimestamp)
       .appId(nativeProperties.getAppId)
       .contentType(nativeProperties.getContentType)
@@ -119,8 +116,8 @@ sealed abstract class DeliveryMode(val mode: Int)
 object DeliveryMode {
 
   def apply(value: Int): DeliveryMode = value match {
-    case 1 ⇒ NotPersistent
-    case 2 ⇒ Persistent
+    case 1 => NotPersistent
+    case 2 => Persistent
     case _ => Unspecified
   }
 
@@ -131,4 +128,3 @@ object DeliveryMode {
   case object Unspecified extends DeliveryMode(-1)
 
 }
-

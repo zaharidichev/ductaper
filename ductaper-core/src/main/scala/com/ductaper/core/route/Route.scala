@@ -3,10 +3,8 @@ package com.ductaper.core.route
 import com.ductaper.core.exchange.Exchange
 
 /**
- * @author Zahari Dichev <zaharidichev@gmail.com>.
- */
-
+  * @author Zahari Dichev <zaharidichev@gmail.com>.
+  */
 case class BrokerRoutingData(exchange: Exchange, routingKey: RoutingKey)
 case class RoutingKey(name: String)
-case class Binding(queue: Queue,exchange: Exchange,routingKey: RoutingKey)
-
+case class Binding(queue: Queue, exchange: Exchange, routingKey: RoutingKey)

@@ -1,8 +1,8 @@
 package com.ductaper.core.serialization
 
 /**
- * Created by zahari on 07/02/2017.
- */
+  * Created by zahari on 07/02/2017.
+  */
 import com.ductaper.core.message.MessagePayload
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.dataformat.smile.SmileFactory
@@ -29,4 +29,3 @@ object JsonMessageConverter extends MessageConverter {
 
   implicit val converter: MessageConverter = this
 }
-
