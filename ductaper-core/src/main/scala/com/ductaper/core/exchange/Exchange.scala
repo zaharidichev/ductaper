@@ -4,7 +4,7 @@ package com.ductaper.core.exchange
   * @author Zahari Dichev <zaharidichev@gmail.com>.
   */
 trait Exchange {
-  def name:String
+  def name: String
   def durable: Boolean
   def autoDelete: Boolean
   def args: Map[String, AnyRef]

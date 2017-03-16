@@ -3,7 +3,7 @@ package com.ductaper.dsl
 trait EndpointDefinition {
   def endpointRoute: EndpointRoute
   def numConsumers: Int
-  def ~(that:EndpointDefinition): ConcatenatedEndpointDefinition = ConcatenatedEndpointDefinition(List(this, that))
+  def ~(that: EndpointDefinition): ConcatenatedEndpointDefinition = ConcatenatedEndpointDefinition(List(this, that))
 }
 
 case class ConcatenatedEndpointDefinition(endpoints: List[EndpointDefinition]) {
